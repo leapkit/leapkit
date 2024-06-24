@@ -10,7 +10,4 @@ require (
 	github.com/paganotoni/tailo v1.0.5
 )
 
-require (
-	github.com/jmoiron/sqlx v1.3.5 // indirect
-	golang.org/x/sys v0.21.0 // indirect
-)
+require golang.org/x/sys v0.21.0 // indirect
