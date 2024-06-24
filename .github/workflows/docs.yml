@@ -26,8 +26,7 @@ jobs:
         run: >
           wget https://github.com/paganotoni/doco/releases/latest/download/doco_Linux_x86_64.tar.gz &&
           tar -xvf doco_Linux_x86_64.tar.gz
-      - working-directory: docs
-        run: ./doco build
+      - run: ./doco build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
