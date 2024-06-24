@@ -7,9 +7,6 @@ import (
 	"runtime/debug"
 )
 
-// The kit version
-var version = "v0.0.1"
-
 func main() {
 	// Parse flags
 	flag.Parse()
