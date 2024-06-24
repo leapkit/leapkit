@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"runtime"
+	"runtime/debug"
 )
 
 // The kit version
@@ -31,7 +31,12 @@ func main() {
 	case "generate", "gen", "g":
 		generate(os.Args[1:])
 	case "version", "v":
-		fmt.Printf("Kit version: %v\n", runtime.Version())
+		version := "(main)"
+		if info, ok := debug.ReadBuildInfo(); ok {
+			version = info.Main.Version
+		}
+
+		fmt.Printf("Kit version: %v\n", version)
 	default:
 		fmt.Printf("Unknown command `%v`.\n\n", os.Args[1])
 	}
