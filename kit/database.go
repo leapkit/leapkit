@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -18,6 +19,15 @@ import (
 	// Sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var (
+	// migrationsFolder is the folder where the migrations are stored
+	migrationsFolder string
+)
+
+func init() {
+	flag.StringVar(&migrationsFolder, "migrations.folder", filepath.Join("internal", "migrations"), "the folder where the migrations are stored")
+}
 
 // database provides operations to manage the database
 // during development. It can create, drop and run migrations.
@@ -47,7 +57,7 @@ func database(args []string) error {
 			return err
 		}
 
-		err = db.RunMigrationsDir(filepath.Join("internal", "migrations"), conn)
+		err = db.RunMigrationsDir(migrationsFolder, conn)
 		if err != nil {
 			return err
 		}
