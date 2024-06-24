@@ -27,13 +27,9 @@ quick_links:
 - text: "Documentation"
   link: "/"
   icon: "menu_book"
-- text: "Template"
-  link: "https://github.com/leapkit/leapkit/template"
+- text: "Repo"
+  link: "https://github.com/leapkit/leapkit"
   icon: "developer_guide"
-- text: "Core"
-  link: "https://"github.com/leapkit/leapkit/core"
-  icon: "hub"
-
 
 # CTA button shows on the top right of the site.
 # cta:
