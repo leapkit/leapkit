@@ -23,5 +23,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go
       - name: test
+        working-directory: ./core
         run: |
           go test --cover ./... -v
