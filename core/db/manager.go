@@ -3,8 +3,8 @@ package db
 import (
 	"strings"
 
-	"github.com/leapkit/core/db/postgres"
-	"github.com/leapkit/core/db/sqlite"
+	"github.com/leapkit/leapkit/core/db/postgres"
+	"github.com/leapkit/leapkit/core/db/sqlite"
 )
 
 // Manager is the interface that wraps the basic methods to

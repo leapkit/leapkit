@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/leapkit/core/internal/plush/ast"
+	"github.com/leapkit/leapkit/core/internal/plush/ast"
 )
 
 type userFunction struct {

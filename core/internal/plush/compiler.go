@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/leapkit/core/internal/plush/token"
+	"github.com/leapkit/leapkit/core/internal/plush/token"
 
 	"html/template"
 	"reflect"
@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/leapkit/core/internal/plush/ast"
-	"github.com/leapkit/core/render/hctx"
+	"github.com/leapkit/leapkit/core/internal/plush/ast"
+	"github.com/leapkit/leapkit/core/render/hctx"
 )
 
 type ErrUnknownIdentifier struct {

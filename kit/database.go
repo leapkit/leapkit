@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/leapkit/core/db"
+	"github.com/leapkit/leapkit/core/db"
 
 	// Loading .env file
-	_ "github.com/leapkit/core/tools/envload"
+	_ "github.com/leapkit/leapkit/core/tools/envload"
 
 	// Postgres driver
 	_ "github.com/lib/pq"

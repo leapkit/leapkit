@@ -3,8 +3,8 @@ package lexer_test
 import (
 	"testing"
 
-	"github.com/leapkit/core/internal/plush/lexer"
-	"github.com/leapkit/core/internal/plush/token"
+	"github.com/leapkit/leapkit/core/internal/plush/lexer"
+	"github.com/leapkit/leapkit/core/internal/plush/token"
 	"github.com/stretchr/testify/require"
 )
 
@@ -30,7 +30,7 @@ func Test_NextToken_Simple(t *testing.T) {
 
 func Test_NextToken_SkipLineComments(t *testing.T) {
 	r := require.New(t)
-	input := `<%= 
+	input := `<%=
 		# comment
 		1
 		# another line comment

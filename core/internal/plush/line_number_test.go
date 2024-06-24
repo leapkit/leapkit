@@ -3,7 +3,7 @@ package plush_test
 import (
 	"testing"
 
-	"github.com/leapkit/core/internal/plush"
+	"github.com/leapkit/leapkit/core/internal/plush"
 	"github.com/stretchr/testify/require"
 )
 
@@ -63,10 +63,10 @@ func Test_LineNumberErrors_InsideForLoop(t *testing.T) {
 func Test_LineNumberErrors_MissingKeyword(t *testing.T) {
 	r := require.New(t)
 	input := `
-	
-	
-	
-	
+
+
+
+
 	<%=  (n) in numbers { %>
 		<%= n %>
 	<% } %>

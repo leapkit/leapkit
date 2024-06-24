@@ -3,7 +3,7 @@ package lexer
 import (
 	"strings"
 
-	"github.com/leapkit/core/internal/plush/token"
+	"github.com/leapkit/leapkit/core/internal/plush/token"
 )
 
 // Lexer moves through the source input and tokenizes its content

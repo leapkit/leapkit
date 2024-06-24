@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"testing"
 
-	"github.com/leapkit/core/internal/helpers/helptest"
+	"github.com/leapkit/leapkit/core/internal/helpers/helptest"
 	"github.com/stretchr/testify/require"
 )
 

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/leapkit/core/assets"
+	"github.com/leapkit/leapkit/core/assets"
 )
 
 func TestFingerprint(t *testing.T) {

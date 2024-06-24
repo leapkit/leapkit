@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/leapkit/core/internal/helpers/text"
-	"github.com/leapkit/core/internal/plush"
-	"github.com/leapkit/core/render/hctx"
+	"github.com/leapkit/leapkit/core/internal/helpers/text"
+	"github.com/leapkit/leapkit/core/internal/plush"
+	"github.com/leapkit/leapkit/core/render/hctx"
 	"github.com/stretchr/testify/require"
 )
 

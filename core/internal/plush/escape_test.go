@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"testing"
 
-	"github.com/leapkit/core/internal/helpers/encoders"
-	"github.com/leapkit/core/internal/plush"
+	"github.com/leapkit/leapkit/core/internal/helpers/encoders"
+	"github.com/leapkit/leapkit/core/internal/plush"
 	"github.com/stretchr/testify/require"
 )
 

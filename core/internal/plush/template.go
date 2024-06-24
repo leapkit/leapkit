@@ -1,10 +1,10 @@
 package plush
 
 import (
-	"github.com/leapkit/core/internal/plush/ast"
-	"github.com/leapkit/core/render/hctx"
+	"github.com/leapkit/leapkit/core/internal/plush/ast"
+	"github.com/leapkit/leapkit/core/render/hctx"
 
-	"github.com/leapkit/core/internal/plush/parser"
+	"github.com/leapkit/leapkit/core/internal/plush/parser"
 )
 
 // Template represents an input and helpers to be used

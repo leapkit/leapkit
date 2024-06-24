@@ -1,7 +1,7 @@
 # Plush
 
 [![Standard Test](https://github.com/gobuffalo/plush/actions/workflows/standard-go-test.yml/badge.svg)](https://github.com/gobuffalo/plush/actions/workflows/standard-go-test.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/leapkit/core/internal/plush.svg)](https://pkg.go.dev/github.com/leapkit/core/internal/plush)
+[![Go Reference](https://pkg.go.dev/badge/"github.com/leapkit/leapkit/core/internal/plush.svg)](https://pkg.go.dev/"github.com/leapkit/leapkit/core/internal/plush)
 
 Plush is the templating system that [Go](http://golang.org) both needs _and_ deserves. Powerful, flexible, and extendable, Plush is there to make writing your templates that much easier.
 
@@ -296,7 +296,7 @@ fmt.Print(s)
 
 ## Helpers
 
-For a full list, and documentation of, all the Helpers included in Plush, see [`github.com/leapkit/core/internal/helpers`](https://godoc.org/github.com/leapkit/core/internal/helpers).
+For a full list, and documentation of, all the Helpers included in Plush, see [`"github.com/leapkit/leapkit/core/internal/helpers`](https://godoc.org/"github.com/leapkit/leapkit/core/internal/helpers).
 
 ### Custom Helpers
 

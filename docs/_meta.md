@@ -31,7 +31,7 @@ quick_links:
   link: "https://github.com/leapkit/template"
   icon: "developer_guide"
 - text: "Core"
-  link: "https://github.com/leapkit/core"
+  link: "https://"github.com/leapkit/leapkit/core"
   icon: "hub"
 
 

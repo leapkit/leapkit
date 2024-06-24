@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/leapkit/core/kit/rebuilder"
+	"github.com/leapkit/leapkit/kit/rebuilder"
 	"github.com/paganotoni/tailo"
 )
 

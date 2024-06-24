@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/leapkit/core/internal/plush"
+	"github.com/leapkit/leapkit/core/internal/plush"
 	"github.com/stretchr/testify/require"
 )
 
@@ -57,7 +57,6 @@ func Test_Let_Reassignment_UnknownIdent(t *testing.T) {
 	_, err := plush.Render(input, ctx)
 	r.ErrorContains(err, "\"foo\": unknown identifier")
 }
-
 
 func Test_Render_Let_Hash(t *testing.T) {
 	tests := []struct {

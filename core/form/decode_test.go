@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
-	"github.com/leapkit/core/form"
+	"github.com/leapkit/leapkit/core/form"
 )
 
 func TestRegisterCustomDecoder(t *testing.T) {
@@ -120,7 +120,6 @@ func TestDecodeMultipartForm(t *testing.T) {
 		t.Fatalf("expected 2021-01-01, got %v", st.Ddd.Format("2006-01-02"))
 	}
 }
-
 
 func TestUUID(t *testing.T) {
 	// Test that passing a uuid as a string works

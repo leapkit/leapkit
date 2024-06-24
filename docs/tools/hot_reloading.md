@@ -14,7 +14,7 @@ Firstly, you need to create another entry point in your app in which this packag
 
 package main
 
-import "github.com/leapkit/core/rebuilder"
+import "github.com/leapkit/leapkit/core/rebuilder"
 
 func main() {
 	rebuilder.Start("./cmd/app/main.go")

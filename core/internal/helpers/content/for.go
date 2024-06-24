@@ -3,7 +3,7 @@ package content
 import (
 	"html/template"
 
-	"github.com/leapkit/core/render/hctx"
+	"github.com/leapkit/leapkit/core/render/hctx"
 )
 
 // ContentFor stores a block of templating code to be re-used later in the template

@@ -1,6 +1,6 @@
 package ast
 
-import "github.com/leapkit/core/internal/plush/token"
+import "github.com/leapkit/leapkit/core/internal/plush/token"
 
 type TokenAble struct {
 	token.Token

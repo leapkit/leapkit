@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/leapkit/core/form/validate"
+	"github.com/leapkit/leapkit/core/form/validate"
 )
 
 func TestRuleRequired(test *testing.T) {

@@ -1,6 +1,6 @@
 package parser
 
-import "github.com/leapkit/core/internal/plush/token"
+import "github.com/leapkit/leapkit/core/internal/plush/token"
 
 const (
 	_           int = iota

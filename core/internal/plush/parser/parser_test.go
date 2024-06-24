@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/leapkit/core/internal/plush/ast"
-	"github.com/leapkit/core/internal/plush/parser"
+	"github.com/leapkit/leapkit/core/internal/plush/ast"
+	"github.com/leapkit/leapkit/core/internal/plush/parser"
 	"github.com/stretchr/testify/require"
 )
 

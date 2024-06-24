@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/leapkit/core/render/hctx"
+	"github.com/leapkit/leapkit/core/render/hctx"
 )
 
 var _ context.Context = &Context{}

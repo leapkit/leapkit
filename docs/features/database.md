@@ -18,7 +18,7 @@ Let's explore each tool in detail.
 The `db` package offers two essential functions: `Create()` and `Drop()`. These functions enable you to set up and manage your database for your project. Simply provide the database URL as a parameter to create it. These functions internally identify, based on the URL structure, which *database engine* will be used to process the action.
 
 ```go
-import "github.com/leapkit/core/db"
+import "github.com/leapkit/leapkit/core/db"
 
 var databaseURL = "postgres://user:password@host:port/db_name"
 
@@ -78,7 +78,7 @@ So that the `db` package can connect to your database, ensure that you import th
 package main
 
 import (
-    "github.com/leapkit/core/db"
+    "github.com/leapkit/leapkit/core/db"
     _ "github.com/lib/pq" // importing the PostgreSQL driver.
 )
 
@@ -103,7 +103,7 @@ func myAwesomeFunc() {
 package main
 
 import (
-    "github.com/leapkit/core/db"
+    "github.com/leapkit/leapkit/core/db"
     _ "github.com/mattn/go-sqlite3" // importing the SQLite3 driver.
 )
 
@@ -134,8 +134,8 @@ By default, migrations are created on the `./internal/app/database/migrations` p
 
 ```go
 import (
-    "github.com/leapkit/core/db"
-	"github.com/leapkit/core/db/migrations"
+    "github.com/leapkit/leapkit/core/db"
+	"github.com/leapkit/leapkit/core/db/migrations"
 )
 
 // ...
@@ -167,8 +167,8 @@ var FS embed.FS
 package main
 
 import (
-    "github.com/leapkit/core/db"
-    "github.com/leapkit/core/db/migrations"
+    "github.com/leapkit/leapkit/core/db"
+    "github.com/leapkit/leapkit/core/db/migrations"
     _ "github.com/lib/pq"
 
     "/my/awesome/migration/path"

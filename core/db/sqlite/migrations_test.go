@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/leapkit/core/db/sqlite"
+	"github.com/leapkit/leapkit/core/db/sqlite"
 	_ "github.com/mattn/go-sqlite3"
 )
 

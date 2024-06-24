@@ -1,6 +1,6 @@
 package escapes
 
-import "github.com/leapkit/core/render/hctx"
+import "github.com/leapkit/leapkit/core/render/hctx"
 
 // Keys to be used in templates for the functions in this package.
 const (

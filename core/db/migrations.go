@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/leapkit/core/db/migrations"
-	"github.com/leapkit/core/db/postgres"
-	"github.com/leapkit/core/db/sqlite"
+	"github.com/leapkit/leapkit/core/db/migrations"
+	"github.com/leapkit/leapkit/core/db/postgres"
+	"github.com/leapkit/leapkit/core/db/sqlite"
 	"github.com/mattn/go-sqlite3"
 )
 

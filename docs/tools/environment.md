@@ -36,7 +36,7 @@ To load the environment variables from the .env file into your application, perf
 
 ```go
 // main.go
-import _ "github.com/leapkit/core/envload"
+import _ "github.com/leapkit/leapkit/core/envload"
 ```
 
 This will load the environment variables from the `.env` file into your application.

@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/leapkit/core/server"
+	"github.com/leapkit/leapkit/core/server"
 )
 
 func TestRouter(t *testing.T) {

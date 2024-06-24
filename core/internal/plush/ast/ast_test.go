@@ -3,8 +3,8 @@ package ast_test
 import (
 	"testing"
 
-	"github.com/leapkit/core/internal/plush/ast"
-	"github.com/leapkit/core/internal/plush/token"
+	"github.com/leapkit/leapkit/core/internal/plush/ast"
+	"github.com/leapkit/leapkit/core/internal/plush/token"
 	"github.com/stretchr/testify/require"
 )
 

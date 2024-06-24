@@ -3,7 +3,7 @@ package ast
 import (
 	"bytes"
 
-	"github.com/leapkit/core/internal/plush/token"
+	"github.com/leapkit/leapkit/core/internal/plush/token"
 )
 
 type ReturnStatement struct {

@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/leapkit/core/db"
-	"github.com/leapkit/core/db/migrations"
+	"github.com/leapkit/leapkit/core/db"
+	"github.com/leapkit/leapkit/core/db/migrations"
 )
 
 func generate(args []string) error {

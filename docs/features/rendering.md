@@ -17,7 +17,7 @@ Philosophy of the render engine is that it lives in the application context and 
 This is the way that the `render` package provides to initialize the render engine in the context of your application, this function receives the file system (`fs.FS`) which is pointing to your HTML files dir. This function returns a middleware that must be used by the router.
 
 ```go
-import "github.com/leapkit/core/render"
+import "github.com/leapkit/leapkit/core/render"
 
 var (
 
@@ -181,8 +181,8 @@ package internal
 import (
     "app/templates"
     "app/internal/users"
-    "github.com/leapkit/core/render"
-	"github.com/leapkit/core/server"
+    "github.com/leapkit/leapkit/core/render"
+	"github.com/leapkit/leapkit/core/server"
 )
 
 var (
@@ -279,4 +279,3 @@ func UserListHandler(w http.ResponseWriter, r *http.Request) {
     <li>Smart Josh</li>
 </ul>
 ```
-

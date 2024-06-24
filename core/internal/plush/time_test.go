@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/leapkit/core/internal/plush"
+	"github.com/leapkit/leapkit/core/internal/plush"
 	"github.com/stretchr/testify/require"
 )
 

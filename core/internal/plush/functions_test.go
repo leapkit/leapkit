@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"testing"
 
-	"github.com/leapkit/core/internal/plush"
+	"github.com/leapkit/leapkit/core/internal/plush"
 	"github.com/stretchr/testify/require"
 )
 
@@ -152,7 +152,7 @@ func Test_Render_Function_With_Backticks_And_Quotes(t *testing.T) {
 	   papers.updated_at,
 	   papers.id,
 	   papers.name,
-	   (   setweight(to_tsvector(papers.name::text), 'A'::"char") || 
+	   (   setweight(to_tsvector(papers.name::text), 'A'::"char") ||
 		   setweight(to_tsvector(papers.author_name), 'B'::"char")
 	   ) || setweight(to_tsvector(papers.description), 'C'::"char")
 	   AS paper_vector
@@ -171,7 +171,7 @@ func Test_Render_Function_With_Backticks_And_Quotes(t *testing.T) {
 	   papers.updated_at,
 	   papers.id,
 	   papers.name,
-	   (   setweight(to_tsvector(papers.name::text), 'A'::"char") || 
+	   (   setweight(to_tsvector(papers.name::text), 'A'::"char") ||
 		   setweight(to_tsvector(papers.author_name), 'B'::"char")
 	   ) || setweight(to_tsvector(papers.description), 'C'::"char")
 	   AS paper_vector
