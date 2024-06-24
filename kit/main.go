@@ -1,11 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 )
 
 func main() {
+	// Parse flags
+	flag.Parse()
+
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: kit <command>")
 		fmt.Println("Available commands:")
