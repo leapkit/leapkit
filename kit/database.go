@@ -2,13 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/leapkit/leapkit/core/db"
+	flag "github.com/spf13/pflag"
 
 	// Loading .env file
 	_ "github.com/leapkit/leapkit/core/tools/envload"
@@ -40,7 +40,7 @@ func database(args []string) error {
 
 	url := os.Getenv("DATABASE_URL")
 	if url == "" {
-		fmt.Println(" DATABASE_URL is not set")
+		fmt.Println("[error] DATABASE_URL is not set")
 
 		return nil
 	}

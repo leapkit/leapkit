@@ -1,13 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"strings"
 
 	"github.com/leapkit/leapkit/kit/internal/assets"
 	"github.com/leapkit/leapkit/kit/internal/rebuilder"
 	"github.com/paganotoni/tailo"
+	flag "github.com/spf13/pflag"
 )
 
 var (
@@ -26,7 +26,6 @@ func init() {
 	flag.StringVar(&tailoInput, "tailo.input", "internal/assets/application.css", "")
 	flag.StringVar(&tailoOutput, "tailo.output", "public/application.css", "")
 	flag.StringVar(&tailoConfig, "tailo.config", "tailwind.config.js", "")
-
 	flag.StringVar(&watchExtensions, "watch.extensions", ".go,.css,.js", "comma separated extensions to watch for recompile")
 }
 

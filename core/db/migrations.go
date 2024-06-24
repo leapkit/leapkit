@@ -64,6 +64,10 @@ func RunMigrationsDir(dir string, conn *sql.DB) error {
 
 	exp := regexp.MustCompile("(\\d{14})_(.*).sql")
 	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return fmt.Errorf("error walking migrations directory: %w", err)
+		}
+
 		if info.IsDir() {
 			return nil
 		}

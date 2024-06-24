@@ -1,10 +1,11 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"runtime/debug"
+
+	flag "github.com/spf13/pflag"
 )
 
 func main() {
@@ -14,8 +15,11 @@ func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: kit <command>")
 		fmt.Println("Available commands:")
-		fmt.Println(" - database [command]")
-		fmt.Println(" - generate [generator]")
+		fmt.Println("    - database [command]")
+		fmt.Print("    - generate [generator]\n\n")
+
+		fmt.Println("Available flags:")
+		flag.PrintDefaults()
 
 		return
 	}
