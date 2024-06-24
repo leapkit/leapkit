@@ -6,7 +6,8 @@ ADD go.mod .
 RUN go mod download
 
 ADD . .
-RUN go build -o bin/db ./cmd/db
+# Installing kit
+RUN go install github.com/leapkit/leapkit/kit@v0.0.7
 
 # Building TailwindCSS with tailo
 RUN go run github.com/paganotoni/tailo/cmd/build@a4899cd
@@ -22,4 +23,7 @@ WORKDIR /bin/
 COPY --from=builder /src/app/bin/app .
 COPY --from=builder /src/app/bin/db .
 
-CMD /bin/app
+# Copying migrations folder
+COPY --from=builder /src/todox/internal/migrations migrations
+
+CMD kit db migrate --migrations.folder=migrations && app
