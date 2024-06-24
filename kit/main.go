@@ -4,7 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 )
+
+// The kit version
+var version = "v0.0.1"
 
 func main() {
 	// Parse flags
@@ -26,6 +30,8 @@ func main() {
 		database(os.Args[1:])
 	case "generate", "gen", "g":
 		generate(os.Args[1:])
+	case "version", "v":
+		fmt.Printf("Kit version: %v\n", runtime.Version())
 	default:
 		fmt.Printf("Unknown command `%v`.\n\n", os.Args[1])
 	}
