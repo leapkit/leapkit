@@ -1,7 +1,9 @@
 package main
 
 import (
+	"cmp"
 	"fmt"
+	"os"
 
 	"github.com/leapkit/leapkit/core/db"
 	"github.com/leapkit/leapkit/template/internal"
@@ -22,7 +24,7 @@ func main() {
 	}
 
 	fmt.Println("✅ Tailwind CSS setup successfully")
-	err = db.Create(internal.DatabaseURL)
+	err = db.Create(cmp.Or(os.Getenv("DATABASE_URL"), "leapkit.db"))
 	if err != nil {
 		fmt.Println(err)
 

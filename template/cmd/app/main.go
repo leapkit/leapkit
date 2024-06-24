@@ -1,12 +1,9 @@
 package main
 
 import (
-	"cmp"
 	"fmt"
 	"net/http"
-	"os"
 
-	"github.com/leapkit/leapkit/core/server"
 	"github.com/leapkit/leapkit/template/internal"
 
 	// Load environment variables
@@ -16,15 +13,7 @@ import (
 )
 
 func main() {
-	s := server.New(
-		server.WithHost(cmp.Or(os.Getenv("HOST"), "0.0.0.0")),
-		server.WithPort(cmp.Or(os.Getenv("PORT"), "3000")),
-	)
-
-	if err := internal.AddRoutes(s); err != nil {
-		os.Exit(1)
-	}
-
+	s := internal.New()
 	fmt.Println("Server started at", s.Addr())
 	err := http.ListenAndServe(s.Addr(), s.Handler())
 	if err != nil {
