@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeapKit</title>
+    <link rel="stylesheet" href="<%= assetPath(`/public/application.css`) %>">
+
+    <script src="https://unpkg.com/hyperscript.org@0.9.8"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+</head>
+<body class="h-full flex flex-row min-h-full relative">
+    <section class="flex flex-col gap-4 min-h-full w-full" >
+        <main class="overflow-scroll min-h-full p-8 py-10 flex flex-col gap-5 bg-gray-100" x-data="">
+            <%= yield %>
+        </main>
+    </section>
+</body>
+</html>

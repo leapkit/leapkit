@@ -1,0 +1,7 @@
+-- This folder holds the database migrations for the application
+-- These migrations will run and then update the database schema
+-- as the application is updated.
+-- 
+-- Migrations are run in order of the file name which follows the
+-- pattern of [timestamp]_migration_name.sql. The timestamp is
+-- used to determine the order of the migrations.

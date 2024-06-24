@@ -12,9 +12,9 @@ logo:
 
 # announcement:
 #  text: "Check our Github repository"
-#  link: "https://github.com/leapkit/template"
+#  link: "https://github.com/leapkit/leapkit/template"
 
-github: "https://github.com/leapkit/template"
+github: "https://github.com/leapkit/leapkit/template"
 external_links:
   text: "Documentation"
   link: "/"
@@ -28,7 +28,7 @@ quick_links:
   link: "/"
   icon: "menu_book"
 - text: "Template"
-  link: "https://github.com/leapkit/template"
+  link: "https://github.com/leapkit/leapkit/template"
   icon: "developer_guide"
 - text: "Core"
   link: "https://"github.com/leapkit/leapkit/core"
