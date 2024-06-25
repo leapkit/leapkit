@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/leapkit/leapkit/core/session"
+	"github.com/leapkit/leapkit/core/server/session"
 )
 
 // Options for the server
