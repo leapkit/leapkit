@@ -1,5 +1,11 @@
 package server
 
+import (
+	"net/http"
+
+	"github.com/leapkit/leapkit/core/server/session"
+)
+
 // Options for the server
 type Option func(*mux)
 
@@ -16,5 +22,18 @@ func WithHost(host string) Option {
 func WithPort(port string) Option {
 	return func(s *mux) {
 		s.port = port
+	}
+}
+
+// WithSession allows to set the session within the application.
+func WithSession(secret, name string, options ...session.Option) Option {
+	return func(m *mux) {
+		m.Use(func(h http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				session.New(secret, name, options...).Register(w, r)
+
+				h.ServeHTTP(w, r)
+			})
+		})
 	}
 }

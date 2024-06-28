@@ -10,7 +10,6 @@ import (
 	"github.com/leapkit/leapkit/core/db"
 	"github.com/leapkit/leapkit/core/render"
 	"github.com/leapkit/leapkit/core/server"
-	"github.com/leapkit/leapkit/core/session"
 	"github.com/leapkit/leapkit/template/internal/home"
 	"github.com/leapkit/leapkit/template/public"
 )
@@ -41,13 +40,11 @@ func New() Server {
 	r := server.New(
 		server.WithHost(cmp.Or(os.Getenv("HOST"), "0.0.0.0")),
 		server.WithPort(cmp.Or(os.Getenv("PORT"), "3000")),
+		server.WithSession(
+			cmp.Or(os.Getenv("SESSION_SECRET"), "d720c059-9664-4980-8169-1158e167ae57"),
+			cmp.Or(os.Getenv("SESSION_NAME"), "leapkit_session"),
+		),
 	)
-
-	// LeapKit Middleware
-	r.Use(session.Middleware(
-		cmp.Or(os.Getenv("SESSION_SECRET"), "d720c059-9664-4980-8169-1158e167ae57"),
-		cmp.Or(os.Getenv("SESSION_NAME"), "leapkit_session"),
-	))
 
 	assetsManager := assets.NewManager(public.Files)
 	r.Use(render.Middleware(
