@@ -41,9 +41,7 @@ type router struct {
 // Use allows to specify a middleware that should be executed for all the handlers
 // in the group
 func (rg *router) Use(middleware ...Middleware) {
-	// Add the middleware to the beginning of the middleware chain
-	// so that it is executed first
-	rg.middleware = append(middleware, rg.middleware...)
+	rg.middleware = append(rg.middleware, middleware...)
 }
 
 // ResetMiddleware clears the list of middleware on the router by setting the baseMiddleware.
@@ -55,8 +53,8 @@ func (rg *router) ResetMiddleware() {
 // in the group with the middleware that should be executed for the handler
 // specified in the group.
 func (rg *router) Handle(pattern string, handler http.Handler) {
-	for _, v := range rg.middleware {
-		handler = v(handler)
+	for i := len(rg.middleware) - 1; i >= 0; i-- {
+		handler = rg.middleware[i](handler)
 	}
 
 	method := ""

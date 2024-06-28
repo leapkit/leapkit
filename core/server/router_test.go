@@ -3,6 +3,7 @@ package server_test
 import (
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 
 	"github.com/leapkit/leapkit/core/server"
@@ -77,55 +78,89 @@ func TestRouter(t *testing.T) {
 }
 
 func TestMiddleware(t *testing.T) {
-	s := server.New()
-	s.Use(server.InCtxMiddleware("customValue", "Hello, World!"))
+	t.Run("ResetMiddleware test", func(t *testing.T) {
+		s := server.New()
+		s.Use(server.InCtxMiddleware("customValue", "Hello, World!"))
 
-	s.Group("/", func(r server.Router) {
-		r.HandleFunc("GET /mw/{$}", func(w http.ResponseWriter, r *http.Request) {
-			v := r.Context().Value("customValue").(string)
-			w.Write([]byte(v))
-		})
-
-		r.Group("/without", func(r server.Router) {
-			r.ResetMiddleware()
-
-			r.HandleFunc("GET /mw/{$}", func(w http.ResponseWriter, r *http.Request) {
-				v, ok := r.Context().Value("customValue").(string)
-				if !ok {
-					w.Write([]byte("customValue not found"))
-					return
-				}
-				w.Write([]byte(v))
-			})
-		})
-
-		r.Group("/other-with", func(r server.Router) {
+		s.Group("/", func(r server.Router) {
 			r.HandleFunc("GET /mw/{$}", func(w http.ResponseWriter, r *http.Request) {
 				v := r.Context().Value("customValue").(string)
-				w.Write([]byte(v + " (again)"))
+				w.Write([]byte(v))
+			})
+
+			r.Group("/without", func(r server.Router) {
+				r.ResetMiddleware()
+
+				r.HandleFunc("GET /mw/{$}", func(w http.ResponseWriter, r *http.Request) {
+					v, ok := r.Context().Value("customValue").(string)
+					if !ok {
+						w.Write([]byte("customValue not found"))
+						return
+					}
+					w.Write([]byte(v))
+				})
+			})
+
+			r.Group("/other-with", func(r server.Router) {
+				r.HandleFunc("GET /mw/{$}", func(w http.ResponseWriter, r *http.Request) {
+					v := r.Context().Value("customValue").(string)
+					w.Write([]byte(v + " (again)"))
+				})
 			})
 		})
+
+		testCases := []struct {
+			description string
+			pattern     string
+			expected    string
+		}{
+			{"request to handler with middleware", "/mw/", "Hello, World!"},
+			{"request to handler without middleware", "/without/mw/", "customValue not found"},
+			{"request to other handler with middleware", "/other-with/mw/", "Hello, World! (again)"},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.description, func(t *testing.T) {
+				req, _ := http.NewRequest(http.MethodGet, tc.pattern, nil)
+				res := httptest.NewRecorder()
+				s.Handler().ServeHTTP(res, req)
+
+				if res.Body.String() != tc.expected {
+					t.Errorf("Expected body %s, got %s", tc.expected, res.Body.String())
+				}
+			})
+		}
 	})
 
-	testCases := []struct {
-		description string
-		pattern     string
-		expected    string
-	}{
-		{"request to handler with middleware", "/mw/", "Hello, World!"},
-		{"request to handler without middleware", "/without/mw/", "customValue not found"},
-		{"request to other handler with middleware", "/other-with/mw/", "Hello, World! (again)"},
-	}
+	t.Run("Middleware execution order", func(t *testing.T) {
+		holder := []string{}
 
-	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
-			req, _ := http.NewRequest(http.MethodGet, tc.pattern, nil)
-			res := httptest.NewRecorder()
-			s.Handler().ServeHTTP(res, req)
-
-			if res.Body.String() != tc.expected {
-				t.Errorf("Expected body %s, got %s", tc.expected, res.Body.String())
+		mw := func(s string) func(http.Handler) http.Handler {
+			return func(next http.Handler) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					holder = append(holder, s)
+					next.ServeHTTP(w, r)
+				})
 			}
+		}
+
+		s := server.New()
+
+		s.Use(mw("one"))
+		s.Use(mw("two"), mw("three"))
+
+		s.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+			holder = append(holder, "end")
 		})
-	}
+
+		req, _ := http.NewRequest(http.MethodGet, "/", nil)
+		res := httptest.NewRecorder()
+		s.Handler().ServeHTTP(res, req)
+
+		expected := []string{"one", "two", "three", "end"}
+
+		if slices.Compare(holder, expected) != 0 {
+			t.Errorf("Expected order '%v', got '%v'", expected, holder)
+		}
+	})
 }
