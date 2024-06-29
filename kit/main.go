@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime/debug"
 
 	flag "github.com/spf13/pflag"
 )
@@ -15,8 +14,12 @@ func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: kit <command>")
 		fmt.Println("Available commands:")
-		fmt.Println("    - database [command]")
-		fmt.Print("    - generate [generator]\n\n")
+		fmt.Println("  - new [name]")
+		fmt.Println("  - database [command]")
+		fmt.Println("  - generate [generator]")
+		fmt.Println("  - serve [command]")
+		fmt.Println("  - version [command]")
+		fmt.Println("")
 
 		fmt.Println("Available flags:")
 		flag.PrintDefaults()
@@ -25,6 +28,8 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "new":
+		newmodule(os.Args[1:])
 	case "serve", "s", "dev":
 		serve(os.Args[1:])
 	case "database", "db":
@@ -32,12 +37,7 @@ func main() {
 	case "generate", "gen", "g":
 		generate(os.Args[1:])
 	case "version", "v":
-		version := "(main)"
-		if info, ok := debug.ReadBuildInfo(); ok {
-			version = info.Main.Version
-		}
-
-		fmt.Printf("Kit version: %v\n", version)
+		version(os.Args[1:])
 	default:
 		fmt.Printf("Unknown command `%v`.\n\n", os.Args[1])
 	}
