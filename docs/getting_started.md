@@ -3,14 +3,20 @@ title: Getting Started
 index: 2
 ---
 
-To get started with LeapKit the [template](https://github.com/leapkit/leapkit/template) repository provides a basic template for building web applications with Go, HTMX and Tailwind CSS. The template generates useful commands to help you develop, build and deploy your application.
+To get started with LeapKit you should installt he `kit` CLI tool. The `kit` CLI tool is a command line interface that contains tools to accelerate your development workflow without replacing go standard building means.
 
-### Generating your project
-
-To generate your project you can use `gonew` to copy the template and generate the necessary files for your project. The following command will generate a new project called `superapp` in the current directory.
+### Installing the CLI
+To install the CLI you can run the following command:
 
 ```
-go run rsc.io/tmp/gonew@latest github.com/leapkit/leapkit/template@v1.1.8 superapp
+go install github.com/leapkit/leapkit/kit@latest
+```
+
+### Generating your project
+Once the CLI has been installed it can be used to build your new leapkit application. To generate a new project you can run the following command:
+
+```
+kit new superapp
 ```
 
 ### Setup
