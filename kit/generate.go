@@ -21,6 +21,12 @@ func generate(args []string) error {
 		return nil
 	}
 
+	if len(args) < 3 {
+		fmt.Println("Usage: generate migration <name>")
+
+		return nil
+	}
+
 	err := db.GenerateMigration(
 		args[2], // name of the migration
 
