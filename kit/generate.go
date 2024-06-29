@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/leapkit/leapkit/core/db"
@@ -23,7 +22,7 @@ func generate(args []string) error {
 	}
 
 	err := db.GenerateMigration(
-		os.Args[2], // name of the migration
+		args[2], // name of the migration
 
 		// This is the path to the migrations folder
 		migrations.UseMigrationFolder(filepath.Join("internal", "migrations")),
