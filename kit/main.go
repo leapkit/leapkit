@@ -27,18 +27,24 @@ func main() {
 		return
 	}
 
+	var err error
 	switch os.Args[1] {
 	case "new":
 		newmodule(os.Args[1:])
 	case "serve", "s", "dev":
 		serve(os.Args[1:])
 	case "database", "db":
-		database(os.Args[1:])
+		err = database(os.Args[1:])
 	case "generate", "gen", "g":
-		generate(os.Args[1:])
+		err = generate(os.Args[1:])
 	case "version", "v":
 		version(os.Args[1:])
 	default:
 		fmt.Printf("Unknown command `%v`.\n\n", os.Args[1])
+		return
+	}
+
+	if err != nil {
+		fmt.Printf("[error] %v\n", err)
 	}
 }
