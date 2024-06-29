@@ -5,6 +5,9 @@ import (
 	"runtime/debug"
 )
 
+// version prints the version of the kit by taking it
+// from the build info or setting it to "(main)" if
+// not available.
 func version(_ []string) {
 	version := "(main)"
 	if info, ok := debug.ReadBuildInfo(); ok {
