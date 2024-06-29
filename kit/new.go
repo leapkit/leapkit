@@ -6,6 +6,9 @@ import (
 	"os/exec"
 )
 
+// newmodule creates a new module using the gonew tool
+// and the leapkit/template template. It passes the name
+// of the module as an argument to the gonew tool.
 func newmodule(args []string) {
 	if len(args) < 2 {
 		fmt.Println("Usage: new [name]")
