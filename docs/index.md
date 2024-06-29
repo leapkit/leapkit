@@ -16,7 +16,5 @@ The LeapKit Core module contains the Go libraries with common web features. Thin
 ## LeapKit Template
 The **LeapKit Template** contains a starting point folder structure using the LeapKit core that uses the LeapKit core and the standard library to provide common functionallity.
 
-## Kit CLI
+## `kit` CLI
 The kit CLI is a CLI tool with the development operations needed to acelerate the development of LeapKit based applications. With the `kit` CLI you can do things such as initializing a LeapKit application, running migrations, code generation and runnign the app in development mode.
-
-The template also has some CLI commands to facilitate the web development of your apps. The template is the starting point in your development journey with LeapKit, and throught he help of the [gonew](https://github.com/golang/tools/tree/master/cmd/gonew) command is used to compose the base structure of your app.
