@@ -78,6 +78,34 @@ func database(args []string) error {
 		}
 
 		fmt.Println("✅ Database dropped successfully")
+
+	case "reset":
+		err := db.Drop(url)
+		if err != nil {
+			return err
+		}
+
+		err = db.Create(url)
+		if err != nil {
+			return err
+		}
+
+		driver := "sqlite3"
+		if strings.HasPrefix(url, "postgres") {
+			driver = "postgres"
+		}
+
+		conn, err := sql.Open(driver, url)
+		if err != nil {
+			return err
+		}
+
+		err = db.RunMigrationsDir(migrationsFolder, conn)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("✅ Database reset successfully")
 	default:
 		fmt.Println("command not found")
 
