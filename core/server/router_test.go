@@ -1,12 +1,14 @@
 package server_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"slices"
 	"testing"
 
 	"github.com/leapkit/leapkit/core/server"
+	"github.com/leapkit/leapkit/core/server/session"
 )
 
 func TestRouter(t *testing.T) {
@@ -161,6 +163,55 @@ func TestMiddleware(t *testing.T) {
 
 		if slices.Compare(holder, expected) != 0 {
 			t.Errorf("Expected order '%v', got '%v'", expected, holder)
+		}
+	})
+
+	t.Run("WithSession Option", func(t *testing.T) {
+		var req *http.Request
+		ctx := context.Background()
+
+		r := server.New(
+			server.WithSession("secret_test", "test"),
+		)
+
+		r.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+			sw := session.FromCtx(r.Context())
+			sw.Values["greet"] = "Hello, World!"
+
+			w.Write([]byte("ok"))
+
+			// capturing the current context for a second call
+			ctx = r.Context()
+		})
+
+		r.HandleFunc("GET /greet/{$}", func(w http.ResponseWriter, r *http.Request) {
+			sw := session.FromCtx(r.Context())
+
+			str := sw.Values["greet"].(string)
+
+			w.Write([]byte(str))
+		})
+
+		resp := httptest.NewRecorder()
+		req = httptest.NewRequest(http.MethodGet, "/", nil)
+		r.Handler().ServeHTTP(resp, req)
+
+		if resp.Code != http.StatusOK {
+			t.Errorf("Expected response code %d, got %d", http.StatusOK, resp.Code)
+		}
+
+		req = httptest.NewRequest(http.MethodGet, "/greet/", nil)
+		req = req.WithContext(ctx)
+		resp.Body.Reset()
+
+		r.Handler().ServeHTTP(resp, req)
+
+		if resp.Code != http.StatusOK {
+			t.Errorf("Expected response code %d, got %d", http.StatusOK, resp.Code)
+		}
+
+		if resp.Body.String() != "Hello, World!" {
+			t.Errorf("Expected body %v, got %v", "Hello, World!", resp.Body.String())
 		}
 	})
 }
