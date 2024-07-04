@@ -38,12 +38,12 @@ type session struct {
 	store *sessions.CookieStore
 }
 
-// Register replaces the current http.ResponseWriter with the saver implementation
-// and also sets the session into request context.
+// Register sets the session within the request context and also
+// replaces the current response writer with the saver implementation.
 func (s *session) Register(w http.ResponseWriter, r *http.Request) {
 	session, _ := s.store.Get(r, s.name)
 
-	r = r.WithContext(context.WithValue(r.Context(), ctxKey, session))
+	*r = *r.WithContext(context.WithValue(r.Context(), ctxKey, session))
 	w = &saver{
 		w:     w,
 		req:   r,
