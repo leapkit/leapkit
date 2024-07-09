@@ -39,7 +39,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     // 	"username_flash": ["peter"],
     // }
 
-    // getting a flash messages
+    // getting flash messages
     flashes := ss.Flashes("username_flash")
     // ["peter"]
     // ...
