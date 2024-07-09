@@ -81,11 +81,7 @@ func TestCreate(t *testing.T) {
 
 		// Check if the file exists
 		_, err = os.Stat("test.db")
-		if err != nil {
-			t.Fatalf("error checking file")
-		}
-
-		if os.IsNotExist(err) {
+		if err != nil || os.IsNotExist(err) {
 			t.Fatalf("file does not exist")
 		}
 	})
@@ -109,12 +105,8 @@ func TestDrop(t *testing.T) {
 
 		// Check if the file exists
 		_, err = os.Stat("test.db")
-		if err == nil {
+		if err == nil || !os.IsNotExist(err) {
 			t.Fatalf("file exists")
-		}
-
-		if !os.IsNotExist(err) {
-			t.Fatalf("error checking file:")
 		}
 
 	})
