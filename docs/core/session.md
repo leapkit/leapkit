@@ -3,11 +3,11 @@ index: 2
 title: "Session"
 ---
 
-Leapkit provides a way to set a session in your project to persist values needed throughout the project. Leapkit uses the [gorilla/sessions](https://github.com/gorilla/sessions) package for this.
+Leapkit provides a way to set a session in your app to persist values needed throughout the app. Leapkit uses the [gorilla/sessions](https://github.com/gorilla/sessions) package for this.
 
 ## Setup
 
-To set the session in your project, you have to use the `server.WithSession` server option and pass a session secret key and the session name.
+To set the session in your app, you have to use the `server.WithSession` server option and pass a session secret key and the session name.
 
 ```go
 s := server.New(
