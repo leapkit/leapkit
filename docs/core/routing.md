@@ -66,6 +66,9 @@ WithHost allows to configure the host of the server. By default its `0.0.0.0`.
 ### WithPort
 WithPort allows to specify the port of the server. By default its `3000`.
 
+### WithSession
+WithSession allows to set a new session into the server. [Read more](/core/session.html).
+
 ## Middleware
 The Router returned by the `server.New` function has a `Use` method that allows you to add middleware to the server.
 
