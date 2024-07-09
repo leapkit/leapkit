@@ -54,19 +54,19 @@ func database(args []string) error {
 
 		conn, err := sql.Open(driver, url)
 		if err != nil {
-			return err
+			return fmt.Errorf("error opening connection: %w", err)
 		}
 
 		err = db.RunMigrationsDir(migrationsFolder, conn)
 		if err != nil {
-			return err
+			return fmt.Errorf("error running migrations: %w", err)
 		}
 
 		fmt.Println("✅ Migrations ran successfully")
 	case "create":
 		err := db.Create(url)
 		if err != nil {
-			return err
+			return fmt.Errorf("error creating database: %w", err)
 		}
 
 		fmt.Println("✅ Database created successfully")
@@ -74,7 +74,7 @@ func database(args []string) error {
 	case "drop":
 		err := db.Drop(url)
 		if err != nil {
-			return err
+			return fmt.Errorf("error dropping database: %w", err)
 		}
 
 		fmt.Println("✅ Database dropped successfully")
@@ -82,12 +82,12 @@ func database(args []string) error {
 	case "reset":
 		err := db.Drop(url)
 		if err != nil {
-			return err
+			return fmt.Errorf("error dropping database: %w", err)
 		}
 
 		err = db.Create(url)
 		if err != nil {
-			return err
+			return fmt.Errorf("error creating database: %w", err)
 		}
 
 		driver := "sqlite3"
@@ -97,12 +97,12 @@ func database(args []string) error {
 
 		conn, err := sql.Open(driver, url)
 		if err != nil {
-			return err
+			return fmt.Errorf("error opening connection: %w", err)
 		}
 
 		err = db.RunMigrationsDir(migrationsFolder, conn)
 		if err != nil {
-			return err
+			return fmt.Errorf("error running migrations: %w", err)
 		}
 
 		fmt.Println("✅ Database reset successfully")
