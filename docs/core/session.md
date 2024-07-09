@@ -43,12 +43,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     flashes := ss.Flashes("username_flash")
     // ["peter"]
     // ...
-
-    // Saving the session
-    if err := ss.Save(r, w); err != nil {
-        // handle the error
-    }
 }
 ```
 
-You can omit the `session.Save()` method **only** if you use `http.ResponseWriter` methods because the response writer is replaced by a session implementation, which saves the current session. Otherwise, you have to use it.
+You can omit the `session.Save()` method **only** if you use `http.ResponseWriter` methods because the response writer is replaced by a Leapkit session implementation, which saves the current session. Otherwise, you have to use it.
