@@ -78,6 +78,16 @@ func TestCreate(t *testing.T) {
 		if string(out) != "✅ Database created successfully\n" {
 			t.Fatalf("unexpected output: %v", string(out))
 		}
+
+		// Check if the file exists
+		_, err = os.Stat("test.db")
+		if err != nil {
+			t.Fatalf("error checking file")
+		}
+
+		if os.IsNotExist(err) {
+			t.Fatalf("file does not exist")
+		}
 	})
 
 }
@@ -96,6 +106,17 @@ func TestDrop(t *testing.T) {
 		if string(out) != "✅ Database dropped successfully\n" {
 			t.Fatalf("unexpected output: %v", string(out))
 		}
+
+		// Check if the file exists
+		_, err = os.Stat("test.db")
+		if err == nil {
+			t.Fatalf("file exists")
+		}
+
+		if !os.IsNotExist(err) {
+			t.Fatalf("error checking file:")
+		}
+
 	})
 
 }
