@@ -43,6 +43,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     flashes := ss.Flashes("username_flash")
     // ["peter"]
     // ...
+
+    // Saving the session
+    if err := ss.Save(r, w); err != nil {
+        // handle the error
+    }
 }
 ```
 
