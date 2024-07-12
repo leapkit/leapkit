@@ -14,7 +14,7 @@ logo:
 #  text: "Check our Github repository"
 #  link: "https://github.com/leapkit/leapkit/template"
 
-github: "https://github.com/leapkit/leapkit/template"
+github: "https://github.com/leapkit/leapkit"
 external_links:
   text: "Documentation"
   link: "/"
