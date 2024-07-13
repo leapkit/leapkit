@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	github.com/fsnotify/fsnotify v1.7.0
-	github.com/leapkit/leapkit/core v0.0.4
+	github.com/leapkit/leapkit/core v0.0.5
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/paganotoni/tailo v1.0.7

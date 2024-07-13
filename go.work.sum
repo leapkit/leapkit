@@ -1,4 +1,2 @@
-github.com/leapkit/leapkit/core v0.0.3/go.mod h1:VWv0QYBILN07ZKhsFO1Utbe21TbdsWbvQ3IDDMnw4GE=
-github.com/paganotoni/tailo v1.0.7 h1:ZOdnt8ymp/vxLi4wlaXJj5+o89PeLmvtnVMKhNyhWj8=
-github.com/paganotoni/tailo v1.0.7/go.mod h1:EJj1Kec68hmveOWyIZFS6GGqFtIj0goWQtxou6wLx8U=
+github.com/leapkit/leapkit/core v0.0.5/go.mod h1:VWv0QYBILN07ZKhsFO1Utbe21TbdsWbvQ3IDDMnw4GE=
 github.com/stretchr/objx v0.5.2/go.mod h1:FRsXN1f5AsAjCGJKqEizvkpNtU+EGNCLh3NxZ/8L+MA=
