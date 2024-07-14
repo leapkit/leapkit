@@ -24,7 +24,7 @@ func main() {
 	}
 
 	fmt.Println("✅ Tailwind CSS setup successfully")
-	err = db.Create(cmp.Or(os.Getenv("DATABASE_URL"), "leapkit.db"))
+	err = db.Create(cmp.Or(os.Getenv("DATABASE_URL"), "database.db"))
 	if err != nil {
 		fmt.Println(err)
 

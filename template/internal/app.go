@@ -22,7 +22,7 @@ var (
 	// that will be used by the application based on the driver and
 	// connection string.
 	DB = db.ConnectionFn(
-		cmp.Or(os.Getenv("DATABASE_URL"), "leapkit.db"),
+		cmp.Or(os.Getenv("DATABASE_URL"), "database.db"),
 		db.WithDriver("sqlite3"),
 	)
 )
