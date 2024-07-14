@@ -24,7 +24,7 @@ func main() {
 	}
 
 	fmt.Println("✅ Tailwind CSS setup successfully")
-	err = db.Create(cmp.Or(os.Getenv("DATABASE_URL"), "database.db"))
+	err = db.Create(cmp.Or(os.Getenv("DATABASE_URL"), "database.db?_timeout=5000"))
 	if err != nil {
 		fmt.Println(err)
 
