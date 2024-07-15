@@ -17,7 +17,7 @@ rules := validate.Fields(
 		"password",
 		// Validations for the field
 		validate.Required("password is required"),
-		validate.MatchRegex(regexp.MustCompile(`^(?=.*[a-z])..`),"Password must be ...",
+		validate.MatchRegex(regexp.MustCompile(`^(?=.*[a-z])..`),"Password must be ..."),
 	),
 )
 

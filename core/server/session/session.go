@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gofrs/uuid/v5"
 	"github.com/gorilla/sessions"
 )
 
@@ -14,9 +13,12 @@ var ctxKey contextKey = "session"
 
 type contextKey string
 
-func init() {
-	// TODO: Look for a better place
-	gob.Register(uuid.UUID{})
+// RegisterSessionTypes registers those custom types
+// that will be stored in the session.
+func RegisterSessionTypes(types ...any) {
+	for _, t := range types {
+		gob.Register(t)
+	}
 }
 
 func New(secret, name string, options ...Option) *session {
