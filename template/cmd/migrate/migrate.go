@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/leapkit/leapkit/template/internal"
 	"github.com/leapkit/leapkit/template/internal/migrations"
 
