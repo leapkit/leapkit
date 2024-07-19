@@ -4,7 +4,6 @@ go 1.22.4
 
 require (
 	github.com/go-playground/form/v4 v4.2.1
-	github.com/gofrs/uuid/v5 v5.2.0
 	github.com/gorilla/sessions v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/stretchr/testify v1.9.0

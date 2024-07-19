@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 // Required function validates the form field has no-empty values.
@@ -198,21 +196,6 @@ func WithinOptions(options []string, message ...string) ValidatorFn {
 
 			return newError(fmt.Sprintf("'%s' is not in the options.", val), message...)
 
-		}
-
-		return nil
-	}
-}
-
-// ValidUUID function validates that the values are valid UUIDs.
-func ValidUUID(message ...string) ValidatorFn {
-	return func(values []string) error {
-		for _, val := range values {
-			if !uuid.FromStringOrNil(val).IsNil() {
-				continue
-			}
-
-			return newError(fmt.Sprintf("'%s' is not a valid uuid.", val), message...)
 		}
 
 		return nil

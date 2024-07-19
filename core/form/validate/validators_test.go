@@ -578,40 +578,6 @@ func TestRuleWithinOptions(test *testing.T) {
 	})
 }
 
-func TestRuleValidUUID(test *testing.T) {
-	// Given a form field uuid values, Then the ValidUUID rule should return no error.
-	test.Run("correct form field values are uuids", func(t *testing.T) {
-		form := url.Values{
-			"input_field": []string{"6ad99ef2-fe43-4c42-b288-aef9040b5388"},
-		}
-
-		validations := validate.Fields(
-			validate.Field("input_field", validate.ValidUUID()),
-		)
-
-		verrs := validations.Validate(form)
-		if len(verrs) > 0 {
-			t.Fatalf("verrs must not have errors, verrs=%v", verrs)
-		}
-	})
-
-	// Given a form field with invalid values, Then the ValidUUID rule should return error.
-	test.Run("incorrect form field values are not uuids", func(t *testing.T) {
-		form := url.Values{
-			"input_field": []string{"no-uuid"},
-		}
-
-		validations := validate.Fields(
-			validate.Field("input_field", validate.ValidUUID()),
-		)
-
-		verrs := validations.Validate(form)
-		if len(verrs) == 0 {
-			t.Fatalf("verrs should have errors. verrs=%v", verrs)
-		}
-	})
-}
-
 func TestRuleTimeEqualTo(test *testing.T) {
 	// Given a form field values that are times equal to the compared time, Then the TimeEqualTo rule should return no error.
 	test.Run("correct form field values are times equal to the compared time", func(t *testing.T) {
