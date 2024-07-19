@@ -7,14 +7,6 @@ This is the  LeapKit template for building web applications with Go, HTMX and Ta
 
 ### Getting started
 
-Use this template by using gonew:
-
-```sh
-go run rsc.io/tmp/gonew@latest github.com/leapkit/leapkit/template@v1.1.5 superapp
-```
-
-### Setup
-
 Install dependencies:
 
 ```sh
