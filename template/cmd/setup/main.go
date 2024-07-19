@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"os"
 
+	"os/exec"
+
 	"github.com/leapkit/leapkit/core/db"
 	"github.com/leapkit/leapkit/template/internal"
 	"github.com/leapkit/leapkit/template/internal/migrations"
-	"github.com/paganotoni/tailo"
 
 	// Load environment variables
 	_ "github.com/leapkit/leapkit/core/tools/envload"
@@ -17,10 +18,16 @@ import (
 )
 
 func main() {
-	// Setup tailo to compile tailwind css.
-	err := tailo.Setup()
+	// Running the tailo setup command
+	cmd := exec.Command("go", "run", "github.com/paganotoni/tailo/cmd/build@latest")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	err := cmd.Run()
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	fmt.Println("✅ Tailwind CSS setup successfully")
