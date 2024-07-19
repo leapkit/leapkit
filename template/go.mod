@@ -1,6 +1,6 @@
 module github.com/leapkit/leapkit/template
 
-go 1.22.4
+go 1.22
 
 require (
 	github.com/leapkit/leapkit/core v0.0.6
