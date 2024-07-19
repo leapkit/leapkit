@@ -1,6 +1,6 @@
 module github.com/leapkit/leapkit/core
 
-go 1.22.4
+go 1.22
 
 require (
 	github.com/go-playground/form/v4 v4.2.1
