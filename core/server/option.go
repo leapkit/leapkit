@@ -27,10 +27,11 @@ func WithPort(port string) Option {
 
 // WithSession allows to set the session within the application.
 func WithSession(secret, name string, options ...session.Option) Option {
+	sw := session.New(secret, name, options...)
 	return func(m *mux) {
 		m.Use(func(h http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				session.New(secret, name, options...).Register(w, r)
+				w, r = sw.Register(w, r)
 
 				h.ServeHTTP(w, r)
 			})

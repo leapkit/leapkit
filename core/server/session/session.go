@@ -2,24 +2,18 @@ package session
 
 import (
 	"context"
-	"encoding/gob"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
 )
 
+// ctxKey is the value used to store the session
+// into the http.Request context.
 var ctxKey contextKey = "session"
 
+// contextKey is the key type used to store the session
+// into the http.Request context.
 type contextKey string
-
-// RegisterSessionTypes registers those custom types
-// that will be stored in the session.
-func RegisterSessionTypes(types ...any) {
-	for _, t := range types {
-		gob.Register(t)
-	}
-}
 
 func New(secret, name string, options ...Option) *session {
 	store := sessions.NewCookieStore([]byte(secret))
@@ -40,17 +34,10 @@ type session struct {
 	store *sessions.CookieStore
 }
 
-// Register sets the session within the request context and also
-// replaces the current response writer with the saver implementation.
-func (s *session) Register(w http.ResponseWriter, r *http.Request) {
+// Register returns an *http.Request with the session set in its context and also
+// a custom http.ResponseWriter implementation that will save the session after each HTTP call.
+func (s *session) Register(w http.ResponseWriter, r *http.Request) (http.ResponseWriter, *http.Request) {
 	session, _ := s.store.Get(r, s.name)
-
-	*r = *r.WithContext(context.WithValue(r.Context(), ctxKey, session))
-	w = &saver{
-		w:     w,
-		req:   r,
-		store: session,
-	}
 
 	// Look for a valuer in the context and set the values for flash
 	// and session so that they can be used in other components of the request.
@@ -58,9 +45,15 @@ func (s *session) Register(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		vlr.Set("flash", flashHelper(session))
 		vlr.Set("session", func() *sessions.Session { return session })
-
-		return
 	}
 
-	fmt.Println("no valuer in context")
+	r = r.WithContext(context.WithValue(r.Context(), ctxKey, session))
+
+	w = &saver{
+		w:     w,
+		req:   r,
+		store: session,
+	}
+
+	return w, r
 }
