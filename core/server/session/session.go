@@ -9,11 +9,11 @@ import (
 
 // ctxKey is the value used to store the session
 // into the http.Request context.
-var ctxKey sessionKey = "session"
+var ctxKey contextKey = "session"
 
 // contextKey is the key type used to store the session
 // into the http.Request context.
-type sessionKey string
+type contextKey string
 
 func New(secret, name string, options ...Option) *session {
 	store := sessions.NewCookieStore([]byte(secret))
