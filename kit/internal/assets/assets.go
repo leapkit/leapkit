@@ -16,12 +16,16 @@ func Watch(inputFolder, outputFolder string) func() {
 	return func() {
 		err := copyAll(inputFolder, outputFolder)
 		if err != nil {
-			log.Println(err)
+			fmt.Println("[error]", err.Error())
+
+			return
 		}
 
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
-			panic(fmt.Errorf("error creating watcher: %w", err))
+			fmt.Printf("[error] error creating watcher: %s\n", err.Error())
+
+			return
 		}
 
 		// Add all folders within the assets folder to the watcher.
@@ -30,7 +34,9 @@ func Watch(inputFolder, outputFolder string) func() {
 		})
 
 		if err != nil {
-			panic(fmt.Errorf("error adding files to watcher: %w", err))
+			fmt.Printf("error adding files to watcher stopping the assets watcher: %s\n", err)
+
+			return
 		}
 
 		go func() {
