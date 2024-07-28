@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -17,6 +18,13 @@ type contextKey string
 
 func New(secret, name string, options ...Option) *session {
 	store := sessions.NewCookieStore([]byte(secret))
+
+	// Default options.
+	store.Options.HttpOnly = true
+
+	// TODO: Review these 2 options for production.
+	store.Options.Secure = false
+	store.Options.SameSite = http.SameSiteLaxMode
 
 	// Run the options on the store
 	for _, option := range options {
@@ -37,7 +45,10 @@ type session struct {
 // Register returns an *http.Request with the session set in its context and also
 // a custom http.ResponseWriter implementation that will save the session after each HTTP call.
 func (s *session) Register(w http.ResponseWriter, r *http.Request) (http.ResponseWriter, *http.Request) {
-	session, _ := s.store.Get(r, s.name)
+	session, err := s.store.Get(r, s.name)
+	if err != nil {
+		fmt.Println(err, "session_name", s.name)
+	}
 
 	// Look for a valuer in the context and set the values for flash
 	// and session so that they can be used in other components of the request.
