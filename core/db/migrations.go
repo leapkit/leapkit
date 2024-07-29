@@ -4,12 +4,10 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
-	"html/template"
 	"os"
 	"path/filepath"
 	"regexp"
 
-	"github.com/leapkit/leapkit/core/db/migrations"
 	"github.com/leapkit/leapkit/core/db/postgres"
 	"github.com/leapkit/leapkit/core/db/sqlite"
 	"github.com/mattn/go-sqlite3"
@@ -26,37 +24,10 @@ func migratorFor(conn *sql.DB) any {
 	}
 }
 
-// GenerateMigration in the migrations folder using the migrations template
-func GenerateMigration(name string, options ...migrations.Option) error {
-	// Applying options before generating the migration
-	migrations.Apply(options...)
-
-	m := migrations.New(name)
-	t, err := template.New("migration").Parse(migrations.Template())
-	if err != nil {
-		return fmt.Errorf("error parsing migrations template: %w", err)
-	}
-
-	// Destination file name
-	name = filepath.Join(migrations.Folder(), m.Filename())
-	f, err := os.Create(name)
-	if err != nil {
-		return fmt.Errorf("error creating migration file: %w", err)
-	}
-
-	err = t.ExecuteTemplate(f, "migration", m)
-	if err != nil {
-		return fmt.Errorf("error executing migrations template: %w", err)
-	}
-
-	fmt.Printf("✅ Migration file `%v` generated\n", name)
-	return nil
-}
-
 // RunMigrationsDir receives a folder and a database URL
 // to apply the migrations to the database.
 func RunMigrationsDir(dir string, conn *sql.DB) error {
-	migrator := migratorFor(conn).(migrations.Migrator)
+	migrator := migratorFor(conn).(Migrator)
 	err := migrator.Setup()
 	if err != nil {
 		return fmt.Errorf("error setting up migrations: %w", err)
@@ -100,7 +71,7 @@ func RunMigrations(fs embed.FS, conn *sql.DB) error {
 		return fmt.Errorf("error reading migrations directory: %w", err)
 	}
 
-	migrator := migratorFor(conn).(migrations.Migrator)
+	migrator := migratorFor(conn).(Migrator)
 	err = migrator.Setup()
 	if err != nil {
 		return fmt.Errorf("error setting up migrations: %w", err)
