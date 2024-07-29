@@ -1,6 +1,7 @@
 package action
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -8,21 +9,9 @@ import (
 
 var (
 	actionsFolder = "internal"
-	templateFile  = `package {{.Package}}
 
-import (
-	"net/http"
-
-	"github.com/leapkit/leapkit/core/render"
-)
-
-func Name(w http.ResponseWriter, r *http.Request) {
-	rw := render.FromCtx(r.Context())
-
-	if err := rw.Render("{{.Folder}}/{{.FileName}}.html"); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}`
+	//go:embed templ.txt
+	templateFile string
 )
 
 func ActionsFolder() string {
