@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"database/sql"
 	"fmt"
 	"os"
@@ -38,12 +39,7 @@ func database(args []string) error {
 		return nil
 	}
 
-	url := os.Getenv("DATABASE_URL")
-	if url == "" {
-		fmt.Println("[error] DATABASE_URL is not set")
-
-		return nil
-	}
+	url := cmp.Or(os.Getenv("DATABASE_URL"), "database.db?_timeout=5000")
 
 	switch args[1] {
 	case "migrate":
