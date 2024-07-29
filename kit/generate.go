@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
+	"strings"
 
-	"github.com/leapkit/leapkit/core/db"
-	"github.com/leapkit/leapkit/core/db/migrations"
+	gen "github.com/leapkit/leapkit/kit/generate"
 )
 
 func generate(args []string) error {
@@ -15,27 +14,51 @@ func generate(args []string) error {
 		return nil
 	}
 
-	if args[1] != "migration" {
+	switch args[1] {
+	case "migration":
+		if len(args) < 3 {
+			fmt.Println("Usage: generate migration <name>")
+
+			return nil
+		}
+
+		err := gen.New(gen.Params{
+			Kind: "migration",
+			Name: args[2],
+		}).Generate()
+
+		if err != nil {
+			return err
+		}
+	case "action":
+		usage := func() error {
+			fmt.Println("Usage: generate action <folder/action>")
+			return nil
+		}
+		if len(args) < 3 {
+			return usage()
+		}
+
+		if args[2] == "" {
+			return usage()
+		}
+
+		path := strings.Split(args[2], "/")
+		if len(path) < 2 {
+			return usage()
+		}
+
+		err := gen.New(gen.Params{
+			Kind: "action",
+			Path: path,
+		}).Generate()
+
+		if err != nil {
+			return err
+		}
+	default:
 		fmt.Println("Usage: generate [generator]")
-
 		return nil
-	}
-
-	if len(args) < 3 {
-		fmt.Println("Usage: generate migration <name>")
-
-		return nil
-	}
-
-	err := db.GenerateMigration(
-		args[2], // name of the migration
-
-		// This is the path to the migrations folder
-		migrations.UseMigrationFolder(filepath.Join("internal", "migrations")),
-	)
-
-	if err != nil {
-		return err
 	}
 
 	return nil
