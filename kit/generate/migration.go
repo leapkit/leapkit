@@ -41,9 +41,9 @@ func Migration(name string) error {
 		return fmt.Errorf("error creating migration file: %w", err)
 	}
 
-	err = t.ExecuteTemplate(f, "migration", struct{ Name, Timestamp string }{
-		Name:      name,
-		Timestamp: timestamp,
+	err = t.ExecuteTemplate(f, "migration", map[string]string{
+		"Name":      name,
+		"Timestamp": timestamp,
 	})
 
 	if err != nil {

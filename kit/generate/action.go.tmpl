@@ -6,7 +6,7 @@ import (
 	"github.com/leapkit/leapkit/core/render"
 )
 
-func Name(w http.ResponseWriter, r *http.Request) {
+func {{.ActionName}}(w http.ResponseWriter, r *http.Request) {
 	rw := render.FromCtx(r.Context())
 
 	if err := rw.Render("{{.Folder}}{{.FileName}}.html"); err != nil {

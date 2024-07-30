@@ -8,6 +8,9 @@ import (
 	"strings"
 
 	_ "embed"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var (
@@ -26,6 +29,7 @@ func Action(name string) error {
 	}
 
 	fileName := filepath.Base(name)
+	actionName := cases.Title(language.English).String(filepath.Base(name))
 
 	actionPackage := "internal"
 	parts := strings.Split(folder, string(filepath.Separator))
@@ -49,10 +53,11 @@ func Action(name string) error {
 	defer file.Close()
 	template := template.Must(template.New("handler").Parse(actionTemplate))
 	err = template.Execute(file, map[string]string{
-		"Package": actionPackage,
-
+		"Package":  actionPackage,
 		"FileName": fileName,
 		"Folder":   folder,
+
+		"ActionName": actionName,
 	})
 
 	// Create action.html
