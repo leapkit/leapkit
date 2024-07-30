@@ -21,6 +21,10 @@ var (
 // Action generates a new action
 func Action(name string) error {
 	folder := filepath.Dir(name)
+	if folder == "." {
+		folder = ""
+	}
+
 	fileName := filepath.Base(name)
 
 	actionPackage := "internal"
@@ -29,9 +33,11 @@ func Action(name string) error {
 		actionPackage = parts[len(parts)-1]
 	}
 
-	// Create the folder
-	if err := os.MkdirAll(filepath.Join(actionsFolder, folder), 0755); err != nil {
-		return fmt.Errorf("error creating folder: %w", err)
+	if folder != "" {
+		// Create the folder
+		if err := os.MkdirAll(filepath.Join(actionsFolder, folder), 0755); err != nil {
+			return fmt.Errorf("error creating folder: %w", err)
+		}
 	}
 
 	// Create action.go
