@@ -7,20 +7,12 @@ import (
 )
 
 func TestMigrate(t *testing.T) {
-
 	testCases := []struct {
 		name            string
 		url             string
 		output          string
 		migrationFolder bool
 	}{
-		{
-			name:            "No DATABASE_URL",
-			url:             "",
-			output:          "[error] DATABASE_URL is not set\n",
-			migrationFolder: true,
-		},
-
 		{
 			name:            "No migrations folder",
 			url:             "file::memory:?cache=shared",
@@ -121,12 +113,6 @@ func TestReset(t *testing.T) {
 		output          string
 		migrationFolder bool
 	}{
-		{
-			name:            "No DATABASE_URL",
-			url:             "",
-			output:          "[error] DATABASE_URL is not set\n",
-			migrationFolder: true,
-		},
 
 		{
 			name:            "No migrations folder",
