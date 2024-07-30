@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
-	gen "github.com/leapkit/leapkit/kit/generate"
+	"github.com/leapkit/leapkit/kit/generate"
 )
 
-func generate(args []string) error {
+func generateWith(args []string) error {
 	if len(args) < 2 {
 		fmt.Println("Usage: generate <generator_name>")
 		fmt.Println("Available commands:")
@@ -25,11 +24,7 @@ func generate(args []string) error {
 			return nil
 		}
 
-		err := gen.New(gen.Params{
-			Kind: "migration",
-			Name: args[2],
-		}).Generate()
-
+		err := generate.Migration(args[2])
 		if err != nil {
 			return err
 		}
@@ -46,12 +41,7 @@ func generate(args []string) error {
 			return usage()
 		}
 
-		path := strings.Split(args[2], "/")
-		err := gen.New(gen.Params{
-			Kind: "action",
-			Path: path,
-		}).Generate()
-
+		err := generate.Action(args[2])
 		if err != nil {
 			return err
 		}
