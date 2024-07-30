@@ -7,12 +7,17 @@ import (
 )
 
 func generateWith(args []string) error {
-	if len(args) < 2 {
+	mainUsage := func() {
 		fmt.Println("Usage: generate <generator_name>")
 		fmt.Println("Available commands:")
 		fmt.Println("  - migration [name]")
 		fmt.Println("  - action [action|folder/action]")
+		fmt.Println("  - handler [name|folder/name]")
 		fmt.Println("")
+	}
+
+	if len(args) < 2 {
+		mainUsage()
 		return nil
 	}
 
@@ -45,8 +50,27 @@ func generateWith(args []string) error {
 		if err != nil {
 			return err
 		}
+
+	case "handler":
+		usage := func() error {
+			fmt.Println("Usage: generate handler [name|folder/name]")
+			return nil
+		}
+		if len(args) < 3 {
+			return usage()
+		}
+
+		if args[2] == "" {
+			return usage()
+		}
+
+		err := generate.Handler(args[2])
+		if err != nil {
+			return err
+		}
+
 	default:
-		fmt.Println("Usage: generate [generator]")
+		mainUsage()
 		return nil
 	}
 
