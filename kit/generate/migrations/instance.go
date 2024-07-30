@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"fmt"
+	"path/filepath"
 	"time"
 )
 
@@ -24,4 +25,13 @@ func New(name string) instance {
 		Name:      name,
 		Timestamp: time.Now().Format("20060102150405"),
 	}
+}
+
+// GenerateMigration in the migrations folder using the migrations template
+func (m instance) Generate() error {
+	return generate(
+		m, // instance of the migration
+		// This is the path to the migrations folder
+		UseFolder(filepath.Join("internal", "migrations")),
+	)
 }

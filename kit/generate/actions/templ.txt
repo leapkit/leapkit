@@ -1,0 +1,15 @@
+package {{.Package}}
+
+import (
+	"net/http"
+
+	"github.com/leapkit/leapkit/core/render"
+)
+
+func Name(w http.ResponseWriter, r *http.Request) {
+	rw := render.FromCtx(r.Context())
+
+	if err := rw.Render("{{.Folder}}/{{.FileName}}.html"); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}

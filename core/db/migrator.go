@@ -1,4 +1,4 @@
-package migrations
+package db
 
 // Migrator that can take care of migration operations
 // depending on the database.
