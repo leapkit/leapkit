@@ -48,15 +48,16 @@ func RunMigrationsDir(dir string, conn *sql.DB) error {
 			return nil
 		}
 
+		name := matches[2]
 		timestamp := matches[1]
 		content, err := os.ReadFile(path)
 		if err != nil {
 			return fmt.Errorf("error opening migration file: %w", err)
 		}
 
-		err = migrator.Run(timestamp, string(content))
+		err = migrator.Run(timestamp, name, string(content))
 		if err != nil {
-			return fmt.Errorf("error running migration: %w", err)
+			return fmt.Errorf("error running migration %s: %w", path, err)
 		}
 
 		return nil
@@ -89,12 +90,13 @@ func RunMigrations(fs embed.FS, conn *sql.DB) error {
 		}
 
 		timestamp := matches[1]
+		name := matches[2]
 		content, err := fs.ReadFile(v.Name())
 		if err != nil {
 			return fmt.Errorf("error opening migration file: %w", err)
 		}
 
-		err = migrator.Run(timestamp, string(content))
+		err = migrator.Run(timestamp, name, string(content))
 		if err != nil {
 			return fmt.Errorf("error running migration: %w", err)
 		}

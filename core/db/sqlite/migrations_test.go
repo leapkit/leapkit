@@ -56,7 +56,7 @@ func TestRun(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = adapter.Run("20210101000000", "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);")
+		err = adapter.Run("20210101000000", "name", "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -82,12 +82,12 @@ func TestRun(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = adapter.Run("20210101000000", "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);")
+		err = adapter.Run("20210101000000", "name", "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);")
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = adapter.Run("20210101000000", "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);")
+		err = adapter.Run("20210101000000", "name", "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);")
 		if err != nil {
 			t.Fatal(err)
 		}

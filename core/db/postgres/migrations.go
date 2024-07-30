@@ -14,7 +14,7 @@ func (a *adapter) Setup() error {
 
 // Run a particular database migration and inserting its timestamp
 // on the migrations table.
-func (a *adapter) Run(timestamp, sql string) error {
+func (a *adapter) Run(timestamp, name, sql string) error {
 	var exists bool
 	row := a.conn.QueryRow("SELECT EXISTS (SELECT 1 FROM schema_migrations WHERE timestamp = $1)", timestamp)
 	err := row.Scan(&exists)

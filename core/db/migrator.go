@@ -6,5 +6,5 @@ type Migrator interface {
 	// Setup the database, p.e. creating the migrations table.
 	Setup() error
 	// Run specific migration timestamp and SQL.
-	Run(timestamp, sql string) error
+	Run(timestamp, name, sql string) error
 }
