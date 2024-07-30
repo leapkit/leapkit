@@ -10,7 +10,10 @@ import (
 func generate(args []string) error {
 	if len(args) < 2 {
 		fmt.Println("Usage: generate <generator_name>")
-
+		fmt.Println("Available commands:")
+		fmt.Println("  - migration [name]")
+		fmt.Println("  - action [action|folder/action]")
+		fmt.Println("")
 		return nil
 	}
 
@@ -32,7 +35,7 @@ func generate(args []string) error {
 		}
 	case "action":
 		usage := func() error {
-			fmt.Println("Usage: generate action <folder/action>")
+			fmt.Println("Usage: generate action [action|folder/action]")
 			return nil
 		}
 		if len(args) < 3 {

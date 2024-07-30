@@ -61,7 +61,7 @@ func TestGenerateAction(t *testing.T) {
 		{
 			name:       "No action name",
 			actionName: "",
-			output:     "Usage: generate action <folder/action>\n",
+			output:     "Usage: generate action [action|folder/action]\n",
 		},
 		{
 			name:       "r",
