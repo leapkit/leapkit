@@ -6,29 +6,39 @@ import (
 	"path/filepath"
 )
 
-type instace struct {
+type instance struct {
 	pckg     string
 	folder   string
 	fileName string
 }
 
-func New(path []string) instace {
+func New(path []string) instance {
+	var pckg string = ActionsFolder()
 	fileName := path[len(path)-1] // The last element is the file name
-	folder := path[:len(path)-1]  // The folder is the path without the file name
-	pckg := folder[len(folder)-1] // The package is the last element of the folder
 
-	return instace{
+	if len(path) == 1 {
+		return instance{
+			pckg:     pckg,
+			folder:   "",
+			fileName: fileName,
+		}
+	}
+
+	folderSlice := path[:len(path)-1]             // The folder is the path without the file name
+	pckg = folderSlice[len(folderSlice)-1]        // The package is the last element of the folder
+	folder := filepath.Join(folderSlice...) + "/" // Join folder elements with "/" and append "/"
+	return instance{
 		pckg:     pckg,
-		folder:   filepath.Join(folder...),
+		folder:   folder,
 		fileName: fileName,
 	}
 }
 
-func (f instace) Generate() error {
+func (f instance) Generate() error {
 	return generate(f)
 }
 
-func (f instace) create(ext string) error {
+func (f instance) create(ext string) error {
 	file, err := os.Create(filepath.Join(ActionsFolder(), f.folder, f.fileName+ext))
 	if err != nil {
 		return err

@@ -22,7 +22,7 @@ func Template() string {
 	return templateFile
 }
 
-func generate(f instace) error {
+func generate(f instance) error {
 	// Create the folder
 	if err := os.MkdirAll(filepath.Join(actionsFolder, f.folder), 0755); err != nil {
 		return fmt.Errorf("error creating folder: %w", err)

@@ -44,10 +44,6 @@ func generate(args []string) error {
 		}
 
 		path := strings.Split(args[2], "/")
-		if len(path) < 2 {
-			return usage()
-		}
-
 		err := gen.New(gen.Params{
 			Kind: "action",
 			Path: path,
