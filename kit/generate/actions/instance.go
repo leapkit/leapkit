@@ -24,12 +24,11 @@ func New(path []string) instance {
 		}
 	}
 
-	folderSlice := path[:len(path)-1]             // The folder is the path without the file name
-	pckg = folderSlice[len(folderSlice)-1]        // The package is the last element of the folder
-	folder := filepath.Join(folderSlice...) + "/" // Join folder elements with "/" and append "/"
+	folder := path[:len(path)-1] // The folder is the path without the file name
+	pckg = folder[len(folder)-1] // The package is the last element of the folder
 	return instance{
 		pckg:     pckg,
-		folder:   folder,
+		folder:   filepath.Join(folder...) + "/", // Join folder elements with "/" and append "/"
 		fileName: fileName,
 	}
 }
