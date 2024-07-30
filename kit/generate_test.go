@@ -61,7 +61,7 @@ func TestGenerateAction(t *testing.T) {
 		{
 			name:       "No action name",
 			actionName: "",
-			output:     "Usage: generate action <folder/action>\n",
+			output:     "Usage: generate action [action|folder/action]\n",
 		},
 		{
 			name:       "r",
@@ -70,8 +70,8 @@ func TestGenerateAction(t *testing.T) {
 		},
 		{
 			name:       "withouth slash",
-			actionName: "action",
-			output:     "Usage: generate action <folder/action>\n",
+			actionName: "activity",
+			output:     "Action files created successfully✅\n",
 		},
 		{
 			name:       "two slashes",
@@ -90,6 +90,14 @@ func TestGenerateAction(t *testing.T) {
 
 			//Remove the files created in the tests
 			if err := os.RemoveAll("internal/some"); err != nil {
+				t.Fatalf("error removing files: %v", err)
+			}
+
+			if err := os.RemoveAll("internal/activity.go"); err != nil {
+				t.Fatalf("error removing files: %v", err)
+			}
+
+			if err := os.RemoveAll("internal/activity.html"); err != nil {
 				t.Fatalf("error removing files: %v", err)
 			}
 
