@@ -259,6 +259,10 @@ func TestLogMiddleware(t *testing.T) {
 	req = httptest.NewRequest(http.MethodGet, "/error/", nil)
 	s.Handler().ServeHTTP(resp, req)
 
+	if !strings.Contains(output.String(), "ERROR") {
+		t.Errorf("Expected log message %v, got %v", "ERROR", output)
+	}
+
 	if !strings.Contains(output.String(), "status_code=500") {
 		t.Errorf("Expected log message %v, got %v", "status_code=500", output)
 	}
