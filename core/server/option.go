@@ -1,8 +1,10 @@
 package server
 
 import (
+	"io/fs"
 	"net/http"
 
+	"github.com/leapkit/leapkit/core/assets"
 	"github.com/leapkit/leapkit/core/server/session"
 )
 
@@ -36,5 +38,23 @@ func WithSession(secret, name string, options ...session.Option) Option {
 				h.ServeHTTP(w, r)
 			})
 		})
+	}
+}
+
+func WithAssets(embedded fs.FS) Option {
+	manager := assets.NewManager(embedded)
+
+	return func(m *mux) {
+		m.Use(func(h http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if vlr, ok := r.Context().Value("valuer").(interface{ Set(string, any) }); ok {
+					vlr.Set("assetPath", manager.PathFor)
+				}
+
+				h.ServeHTTP(w, r)
+			})
+		})
+
+		m.HandleFunc(manager.HandlerPattern(), manager.HandlerFn)
 	}
 }
