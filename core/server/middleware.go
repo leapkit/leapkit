@@ -1,6 +1,7 @@
 package server
 
 import (
+	"cmp"
 	"context"
 	"log/slog"
 	"net/http"
@@ -27,6 +28,18 @@ func requestID(next http.Handler) http.Handler {
 	})
 }
 
+// loggerWriter is a wrapper around http.ResponseWriter that keeps track of the status code
+type loggerWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+// WriteHeader methods overrides the ResponseWriter.WriteHeader method to capture the status code.
+func (lw *loggerWriter) WriteHeader(statusCode int) {
+	lw.status = statusCode
+	lw.ResponseWriter.WriteHeader(statusCode)
+}
+
 // logger is a middleware that logs the request method and URL
 // and the time it took to process the request.
 func logger(next http.Handler) http.Handler {
@@ -34,9 +47,21 @@ func logger(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		next.ServeHTTP(w, r)
 
-		logger.Info("", "method", r.Method, "url", r.URL.Path, "took", time.Since(start))
+		lw := &loggerWriter{ResponseWriter: w}
+
+		defer func() {
+			lw.status = cmp.Or(lw.status, http.StatusOK)
+			logLevel := slog.LevelInfo
+
+			if lw.status >= http.StatusInternalServerError {
+				logLevel = slog.LevelError
+			}
+
+			logger.Log(r.Context(), logLevel, "", "method", r.Method, "status_code", lw.status, "url", r.URL.Path, "took", time.Since(start))
+		}()
+
+		next.ServeHTTP(lw, r)
 	})
 }
 
