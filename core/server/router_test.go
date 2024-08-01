@@ -245,15 +245,15 @@ func TestLogMiddleware(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	s.Handler().ServeHTTP(resp, req)
 
-	if !strings.Contains(output.String(), "status_code=200") {
-		t.Errorf("Expected log message %v, got %v", "status_code=200", output)
+	if !strings.Contains(output.String(), "status=200") {
+		t.Errorf("Expected log message %v, got %v", "status=200", output)
 	}
 
 	req = httptest.NewRequest(http.MethodGet, "/redirect/", nil)
 	s.Handler().ServeHTTP(resp, req)
 
-	if !strings.Contains(output.String(), "status_code=303") {
-		t.Errorf("Expected log message %v, got %v", "status_code=303", output)
+	if !strings.Contains(output.String(), "status=303") {
+		t.Errorf("Expected log message %v, got %v", "status=303", output)
 	}
 
 	req = httptest.NewRequest(http.MethodGet, "/error/", nil)
@@ -263,7 +263,7 @@ func TestLogMiddleware(t *testing.T) {
 		t.Errorf("Expected log message %v, got %v", "ERROR", output)
 	}
 
-	if !strings.Contains(output.String(), "status_code=500") {
-		t.Errorf("Expected log message %v, got %v", "status_code=500", output)
+	if !strings.Contains(output.String(), "status=500") {
+		t.Errorf("Expected log message %v, got %v", "status=500", output)
 	}
 }

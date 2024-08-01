@@ -58,7 +58,7 @@ func logger(next http.Handler) http.Handler {
 				logLevel = slog.LevelError
 			}
 
-			logger.Log(r.Context(), logLevel, "", "method", r.Method, "status_code", lw.status, "url", r.URL.Path, "took", time.Since(start))
+			logger.Log(r.Context(), logLevel, "", "method", r.Method, "status", lw.status, "url", r.URL.Path, "took", time.Since(start))
 		}()
 
 		next.ServeHTTP(lw, r)
