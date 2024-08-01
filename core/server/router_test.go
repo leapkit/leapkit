@@ -2,9 +2,11 @@ package server_test
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/leapkit/leapkit/core/server"
@@ -12,7 +14,6 @@ import (
 )
 
 func TestRouter(t *testing.T) {
-
 	s := server.New()
 
 	s.Group("/", func(r server.Router) {
@@ -214,4 +215,55 @@ func TestMiddleware(t *testing.T) {
 			t.Errorf("Expected body %v, got %v", "Hello, World!", resp.Body.String())
 		}
 	})
+}
+
+func TestLogMiddleware(t *testing.T) {
+	output := new(strings.Builder)
+	log.SetOutput(output)
+
+	s := server.New()
+	s.Use(func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer output.Reset() // clear log output
+			h.ServeHTTP(w, r)
+		})
+	})
+
+	s.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
+	})
+
+	s.HandleFunc("GET /redirect/{$}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
+	s.HandleFunc("GET /error/{$}", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "error", http.StatusInternalServerError)
+	})
+
+	resp := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	s.Handler().ServeHTTP(resp, req)
+
+	if !strings.Contains(output.String(), "status_code=200") {
+		t.Errorf("Expected log message %v, got %v", "status_code=200", output)
+	}
+
+	req = httptest.NewRequest(http.MethodGet, "/redirect/", nil)
+	s.Handler().ServeHTTP(resp, req)
+
+	if !strings.Contains(output.String(), "status_code=303") {
+		t.Errorf("Expected log message %v, got %v", "status_code=303", output)
+	}
+
+	req = httptest.NewRequest(http.MethodGet, "/error/", nil)
+	s.Handler().ServeHTTP(resp, req)
+
+	if !strings.Contains(output.String(), "ERROR") {
+		t.Errorf("Expected log message %v, got %v", "ERROR", output)
+	}
+
+	if !strings.Contains(output.String(), "status_code=500") {
+		t.Errorf("Expected log message %v, got %v", "status_code=500", output)
+	}
 }
