@@ -29,7 +29,7 @@ go run ./cmd/setup
 To run the application in development mode execute:
 
 ```sh
-go run ./cmd/dev
+kit dev
 ```
 
 And open `http://localhost:3000` in your browser.
