@@ -35,7 +35,7 @@ This will install the necessary dependencies and setup the project for developme
 Running the application is as simple as running the following command:
 
 ```
-go run ./cmd/dev
+kit dev
 ```
 
 Once the application is running it should be [accessible locally](http://localhost:3000).
