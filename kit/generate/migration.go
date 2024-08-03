@@ -35,8 +35,13 @@ func Migration(name string) error {
 	}
 
 	// Destination file name
-	name = filepath.Join(migrationsFolder, fileName)
-	f, err := os.Create(name)
+	fileName = filepath.Join(migrationsFolder, fileName)
+	err = os.MkdirAll(filepath.Dir(fileName), 0700)
+	if err != nil {
+		return fmt.Errorf("error creating migrations folder: %w", err)
+	}
+
+	f, err := os.Create(fileName)
 	if err != nil {
 		return fmt.Errorf("error creating migration file: %w", err)
 	}
