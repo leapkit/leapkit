@@ -38,5 +38,4 @@ func TestGenerateHandler(t *testing.T) {
 			t.Fatalf("content %v function not found", expected)
 		}
 	}
-
 }

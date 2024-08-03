@@ -44,7 +44,7 @@ func Handler(name string) error {
 	}
 
 	// Create action.go
-	fileName := path.Base(name)
+	fileName := strings.ToLower(path.Base(name))
 	file, err := os.Create(filepath.Join(actionsFolder, folder, fileName+".go"))
 	if err != nil {
 		return err
