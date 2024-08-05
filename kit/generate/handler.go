@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -17,24 +18,33 @@ var (
 	handlerTemplate string
 )
 
-func Handler(name string) error {
-	path := strings.Split(name, string(filepath.Separator))
-	actionPackage := "internal"
-	fileName := path[len(path)-1] // file name is the last part of the path
-	if len(path) > 1 {
-		actionPackage = path[len(path)-2] // package name is the second to last part of the path
+func handlerName(name string) string {
+	var g []string
+	p := strings.Fields(name)
+	for _, value := range p {
+		g = append(g, cases.Title(language.English, cases.NoLower).String(value))
 	}
 
-	folder := strings.Join(path[:len(path)-1], string(filepath.Separator)) // folder is everything but the last part of the path
+	return strings.Join(g, "")
+}
+
+func Handler(name string) error {
+	actionPackage := "internal"
+
+	folder := path.Dir(name)
+	if len(folder) > 0 && folder != "." {
+		parts := filepath.SplitList(folder)
+		actionPackage = parts[len(parts)-1]
+		actionPackage = cases.Lower(language.English).String(folder)
+	}
 
 	// Create the folder
-	if actionPackage != "internal" {
-		if err := os.MkdirAll(filepath.Join(actionsFolder, folder), 0755); err != nil {
-			return fmt.Errorf("error creating folder: %w", err)
-		}
+	if err := os.MkdirAll(filepath.Join(actionsFolder, folder), 0755); err != nil {
+		return fmt.Errorf("error creating folder: %w", err)
 	}
 
 	// Create action.go
+	fileName := strings.ToLower(path.Base(name))
 	file, err := os.Create(filepath.Join(actionsFolder, folder, fileName+".go"))
 	if err != nil {
 		return err
@@ -42,10 +52,9 @@ func Handler(name string) error {
 
 	defer file.Close()
 	template := template.Must(template.New("handler").Parse(handlerTemplate))
-	fileName = cases.Title(language.English).String(filepath.Base(fileName))
 	err = template.Execute(file, map[string]string{
 		"Package":  actionPackage,
-		"FuncName": fileName,
+		"FuncName": handlerName(name),
 	})
 
 	if err != nil {
