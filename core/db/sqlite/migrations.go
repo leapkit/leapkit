@@ -35,23 +35,28 @@ func (a *adapter) Run(timestamp, name, sql string) error {
 		}
 	}()
 
-	if !exists {
-		_, err = tx.Exec(sql)
-		if err != nil {
-			err = fmt.Errorf("error running migration: %w", err)
-			return err
-		}
-
-		_, err = tx.Exec("INSERT INTO schema_migrations (timestamp) VALUES ($1);", timestamp)
-		if err != nil {
-			err = fmt.Errorf("error running migration: %w", err)
-			return err
-		}
-
-		fmt.Printf("✅ Migration %v (%v) applied.\n", name, timestamp)
+	if exists {
+		return nil
 	}
 
-	tx.Commit()
+	_, err = tx.Exec(sql)
+	if err != nil {
+		err = fmt.Errorf("error running migration: %w", err)
+		return err
+	}
 
-	return err
+	_, err = tx.Exec("INSERT INTO schema_migrations (timestamp) VALUES ($1);", timestamp)
+	if err != nil {
+		err = fmt.Errorf("error running migration: %w", err)
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("error running migration: %w", err)
+	}
+
+	fmt.Printf("✅ Migration %v (%v) applied.\n", name, timestamp)
+
+	return nil
 }
