@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/leapkit/leapkit/core/internal/plush"
+	"github.com/gobuffalo/plush/v5"
 	"github.com/leapkit/leapkit/core/server"
 	"github.com/leapkit/leapkit/core/server/session"
 )

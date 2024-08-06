@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"strings"
 
-	"github.com/leapkit/leapkit/core/internal/plush"
+	"github.com/gobuffalo/plush/v5"
 )
 
 type Page struct {
