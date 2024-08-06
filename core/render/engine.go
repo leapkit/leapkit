@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"sync"
 
-	"github.com/leapkit/leapkit/core/internal/plush"
+	"github.com/gobuffalo/plush/v5"
 )
 
 // NewEngine builds the render engine based on the

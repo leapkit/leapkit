@@ -50,7 +50,6 @@ func New() Server {
 		render.TemplateFS(tmpls, "internal"),
 
 		render.WithDefaultLayout("layout.html"),
-		render.WithHelpers(render.AllHelpers),
 	))
 
 	r.HandleFunc("GET /{$}", home.Index)
