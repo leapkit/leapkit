@@ -37,6 +37,8 @@ func main() {
 		err = database(os.Args[1:])
 	case "generate", "gen", "g":
 		err = generateWith(os.Args[1:])
+	case "update":
+		err = update()
 	case "version", "v":
 		version(os.Args[1:])
 	default:
