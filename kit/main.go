@@ -19,6 +19,7 @@ func main() {
 		fmt.Println("  - generate [generator]")
 		fmt.Println("  - serve [command]")
 		fmt.Println("  - version [command]")
+		fmt.Println("  - update")
 		fmt.Println("")
 
 		fmt.Println("Available flags:")
