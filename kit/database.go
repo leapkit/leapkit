@@ -39,7 +39,7 @@ func database(args []string) error {
 		return nil
 	}
 
-	url := cmp.Or(os.Getenv("DATABASE_URL"), "database.db?_timeout=5000")
+	url := cmp.Or(os.Getenv("DATABASE_URL"), "database.db?_timeout=5000&_sync=1")
 
 	switch args[1] {
 	case "migrate":

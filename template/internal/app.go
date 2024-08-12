@@ -21,7 +21,7 @@ var (
 	// that will be used by the application based on the driver and
 	// connection string.
 	DB = db.ConnectionFn(
-		cmp.Or(os.Getenv("DATABASE_URL"), "database.db?_timeout=5000"),
+		cmp.Or(os.Getenv("DATABASE_URL"), "database.db?_timeout=5000&_sync=1"),
 		db.WithDriver("sqlite3"),
 	)
 )
