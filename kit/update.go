@@ -11,14 +11,9 @@ import (
 func update() error {
 	fmt.Println("🔍 Looking for the latest version...")
 
-	request, err := http.NewRequest("GET", "https://api.github.com/repos/leapkit/leapkit/tags", nil)
+	response, err := http.Get("https://api.github.com/repos/leapkit/leapkit/tags")
 	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-
-	response, err := http.DefaultClient.Do(request)
-	if err != nil {
-		return fmt.Errorf("failed to send request: %w", err)
+		return fmt.Errorf("failed to fetch tags: %w", err)
 	}
 
 	defer response.Body.Close()
