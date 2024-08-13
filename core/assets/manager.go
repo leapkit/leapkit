@@ -32,7 +32,7 @@ func NewManager(embedded fs.FS) *manager {
 
 		inputFolder:  "internal/assets",
 		outputFolder: "public",
-		servingPath:  "/public/*",
+		servingPath:  "/public/",
 
 		fileToHash: map[string]string{},
 		HashToFile: map[string]string{},
