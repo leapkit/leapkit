@@ -54,6 +54,6 @@ func WithAssets(embedded fs.FS) Option {
 			})
 		})
 
-		m.mux.Handle(manager.HandlerPattern(), manager.Handler())
+		m.Folder(manager.HandlerPattern(), manager)
 	}
 }
