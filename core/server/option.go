@@ -43,7 +43,6 @@ func WithSession(secret, name string, options ...session.Option) Option {
 
 func WithAssets(embedded fs.FS) Option {
 	manager := assets.NewManager(embedded)
-
 	return func(m *mux) {
 		m.Use(func(h http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +54,6 @@ func WithAssets(embedded fs.FS) Option {
 			})
 		})
 
-		m.HandleFunc(manager.HandlerPattern(), manager.HandlerFn)
+		m.Folder(manager.HandlerPattern(), manager)
 	}
 }

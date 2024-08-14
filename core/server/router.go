@@ -79,8 +79,8 @@ func (rg *router) HandleFunc(pattern string, handler http.HandlerFunc) {
 // Folder allows to serve static files from a directory
 func (rg *router) Folder(prefix string, fs fs.FS) {
 	rg.mux.Handle(
-		fmt.Sprintf("GET %s/*", path.Join(rg.prefix, prefix)),
-		http.StripPrefix(prefix, http.FileServer(http.FS(fs))),
+		fmt.Sprintf("GET %s/", path.Join(rg.prefix, prefix)),
+		http.StripPrefix(prefix, http.FileServerFS(fs)),
 	)
 }
 

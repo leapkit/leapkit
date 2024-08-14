@@ -13,8 +13,8 @@ func (m *manager) HandlerPattern() string {
 	return m.servingPath
 }
 
-func (m *manager) HandlerFn(w http.ResponseWriter, r *http.Request) {
-	http.ServeFileFS(w, r, m, strings.TrimPrefix(r.URL.Path, m.handlerPrefix()))
+func (m *manager) Handler() http.Handler {
+	return http.StripPrefix(m.servingPath, http.FileServerFS(m))
 }
 
 func (m *manager) Open(name string) (file fs.File, err error) {
@@ -34,9 +34,9 @@ func (m *manager) Open(name string) (file fs.File, err error) {
 		fn = m.folder.Open
 	}
 
-	name = strings.TrimPrefix(name, m.handlerPrefix())
-
+	name = strings.TrimPrefix(name, m.servingPath)
 	file, err = fn(name)
+
 	return file, err
 }
 
@@ -47,8 +47,4 @@ func (m *manager) ReadFile(name string) ([]byte, error) {
 	}
 
 	return io.ReadAll(x)
-}
-
-func (m *manager) handlerPrefix() string {
-	return strings.TrimSuffix(m.servingPath, "*")
 }
