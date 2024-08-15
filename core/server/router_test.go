@@ -1,10 +1,13 @@
 package server_test
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"slices"
 	"strings"
 	"testing"
@@ -217,53 +220,129 @@ func TestMiddleware(t *testing.T) {
 	})
 }
 
-func TestLogMiddleware(t *testing.T) {
+func TestBaseMiddlewares(t *testing.T) {
 	output := new(strings.Builder)
 	log.SetOutput(output)
 
-	s := server.New()
-	s.Use(func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			defer output.Reset() // clear log output
-			h.ServeHTTP(w, r)
+	t.Run("logger", func(t *testing.T) {
+		t.Cleanup(output.Reset)
+
+		s := server.New()
+		s.Use(func(h http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				defer output.Reset() // clear log output
+				h.ServeHTTP(w, r)
+			})
 		})
+
+		s.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("ok"))
+		})
+
+		s.HandleFunc("GET /redirect/{$}", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		})
+
+		s.HandleFunc("GET /error/{$}", func(w http.ResponseWriter, r *http.Request) {
+			http.Error(w, "error", http.StatusInternalServerError)
+		})
+
+		resp := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if !strings.Contains(output.String(), "status=200") {
+			t.Errorf("Expected log message %v, got %v", "status=200", output)
+		}
+
+		req = httptest.NewRequest(http.MethodGet, "/redirect/", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if !strings.Contains(output.String(), "status=303") {
+			t.Errorf("Expected log message %v, got %v", "status=303", output)
+		}
+
+		req = httptest.NewRequest(http.MethodGet, "/error/", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if !strings.Contains(output.String(), "ERROR") {
+			t.Errorf("Expected log message %v, got %v", "ERROR", output)
+		}
+
+		if !strings.Contains(output.String(), "status=500") {
+			t.Errorf("Expected log message %v, got %v", "status=500", output)
+		}
 	})
 
-	s.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("ok"))
+	t.Run("recoverer error stack trace in development mode", func(t *testing.T) {
+		current := os.Stderr
+
+		r, testSrdErr, _ := os.Pipe()
+		os.Stderr = testSrdErr
+
+		t.Cleanup(func() {
+			output.Reset()
+			os.Stderr = current
+		})
+
+		t.Setenv("GO_ENV", "development")
+
+		s := server.New()
+		s.HandleFunc("GET /panic/{$}", func(w http.ResponseWriter, r *http.Request) {
+			slice := [][]byte{}
+			w.Write(slice[1])
+		})
+
+		resp := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/panic/", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if !strings.Contains(output.String(), "status=500") {
+			t.Errorf("Expected log message %v, got %v", "status=500", output)
+		}
+
+		testSrdErr.Close()
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+
+		if !strings.Contains(buf.String(), "runtime/debug.Stack()") {
+			t.Errorf("Expected error message %v, got %v", "runtime/debug.Stack()", buf.String())
+		}
 	})
 
-	s.HandleFunc("GET /redirect/{$}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+	t.Run("recoverer error stack trace in production mode", func(t *testing.T) {
+		current := os.Stderr
+
+		r, testSrdErr, _ := os.Pipe()
+		os.Stderr = testSrdErr
+
+		t.Cleanup(func() {
+			output.Reset()
+			os.Stderr = current
+		})
+
+		t.Setenv("GO_ENV", "production")
+
+		s := server.New()
+		s.HandleFunc("GET /panic/{$}", func(w http.ResponseWriter, r *http.Request) {
+			slice := [][]byte{}
+			w.Write(slice[1])
+		})
+
+		resp := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/panic/", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if !strings.Contains(output.String(), "status=500") {
+			t.Errorf("Expected log message %v, got %v", "status=500", output)
+		}
+
+		testSrdErr.Close()
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+
+		if strings.Contains(buf.String(), "foo") {
+			t.Errorf("Expected message to be empty, got %v", buf)
+		}
 	})
-
-	s.HandleFunc("GET /error/{$}", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "error", http.StatusInternalServerError)
-	})
-
-	resp := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	s.Handler().ServeHTTP(resp, req)
-
-	if !strings.Contains(output.String(), "status=200") {
-		t.Errorf("Expected log message %v, got %v", "status=200", output)
-	}
-
-	req = httptest.NewRequest(http.MethodGet, "/redirect/", nil)
-	s.Handler().ServeHTTP(resp, req)
-
-	if !strings.Contains(output.String(), "status=303") {
-		t.Errorf("Expected log message %v, got %v", "status=303", output)
-	}
-
-	req = httptest.NewRequest(http.MethodGet, "/error/", nil)
-	s.Handler().ServeHTTP(resp, req)
-
-	if !strings.Contains(output.String(), "ERROR") {
-		t.Errorf("Expected log message %v, got %v", "ERROR", output)
-	}
-
-	if !strings.Contains(output.String(), "status=500") {
-		t.Errorf("Expected log message %v, got %v", "status=500", output)
-	}
 }
