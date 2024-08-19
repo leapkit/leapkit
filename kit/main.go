@@ -19,6 +19,7 @@ func main() {
 		fmt.Println("  - generate [generator]")
 		fmt.Println("  - serve [command]")
 		fmt.Println("  - version [command]")
+		fmt.Println("  - update")
 		fmt.Println("")
 
 		fmt.Println("Available flags:")
@@ -37,6 +38,8 @@ func main() {
 		err = database(os.Args[1:])
 	case "generate", "gen", "g":
 		err = generateWith(os.Args[1:])
+	case "update":
+		err = update()
 	case "version", "v":
 		version(os.Args[1:])
 	default:
