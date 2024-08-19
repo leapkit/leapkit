@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/leapkit/leapkit/kit/generate"
+	"github.com/leapkit/leapkit/kit/internal/generate"
 )
 
 func generateWith(args []string) error {
