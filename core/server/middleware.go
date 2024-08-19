@@ -3,8 +3,11 @@ package server
 import (
 	"cmp"
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
+	"runtime/debug"
 	"time"
 )
 
@@ -13,8 +16,8 @@ import (
 var baseMiddleware = []Middleware{
 	setValuer,
 	requestID,
-	recoverer,
 	logger,
+	recoverer,
 }
 
 // Middleware is a function that receives a http.Handler and returns a http.Handler
@@ -66,11 +69,17 @@ func logger(next http.Handler) http.Handler {
 }
 
 // recoverer is a middleware that recovers from panics and logs the error.
+// The error stack trace is printed only when the application is in 'development' mode.
 func recoverer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
 				slog.Error("panic", "error", err, "method", r.Method, "url", r.URL.Path)
+
+				if cmp.Or(os.Getenv("GO_ENV"), "development") == "development" {
+					os.Stderr.WriteString(fmt.Sprint(err, "\n"))
+					os.Stderr.Write(debug.Stack())
+				}
 
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
