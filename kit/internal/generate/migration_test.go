@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/leapkit/leapkit/kit/generate"
+	"github.com/leapkit/leapkit/kit/internal/generate"
 )
 
 func TestGenerateMigration(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/leapkit/leapkit/kit/generate"
+	"github.com/leapkit/leapkit/kit/internal/generate"
 )
 
 func TestGenerateHandler(t *testing.T) {
