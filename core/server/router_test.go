@@ -321,12 +321,10 @@ func TestBaseMiddlewares(t *testing.T) {
 			os.Stderr = current
 		})
 
-		t.Setenv("GO_ENV", "production")
-
 		s := server.New()
 		s.HandleFunc("GET /panic/{$}", func(w http.ResponseWriter, r *http.Request) {
-			slice := [][]byte{}
-			w.Write(slice[1])
+			empty := [][]byte{}
+			w.Write(empty[1])
 		})
 
 		resp := httptest.NewRecorder()
@@ -394,7 +392,7 @@ func TestCatchAll(t *testing.T) {
 		s.Handler().ServeHTTP(resp, req)
 
 		if exp := "not found"; !strings.Contains(resp.Body.String(), exp) {
-			t.Errorf("Expected POST body %v, got %v", exp, resp.Body.String())
+			t.Errorf(": Expected body %v, got %v", exp, resp.Body.String())
 		}
 	})
 

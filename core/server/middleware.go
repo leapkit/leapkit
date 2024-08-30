@@ -47,6 +47,10 @@ func (lw *loggerWriter) WriteHeader(statusCode int) {
 // and the time it took to process the request.
 func logger(next http.Handler) http.Handler {
 	logger := slog.Default()
+	if os.Getenv("GO_ENV") == "production" {
+		// Using text logger in production
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
