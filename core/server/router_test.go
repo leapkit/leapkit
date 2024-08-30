@@ -346,3 +346,56 @@ func TestBaseMiddlewares(t *testing.T) {
 		}
 	})
 }
+
+func TestCatchAll(t *testing.T) {
+	t.Run("no catch-all defined", func(t *testing.T) {
+		s := server.New()
+
+		resp := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/notregistered/one", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if exp := "404 page not found"; !strings.Contains(resp.Body.String(), exp) {
+			t.Errorf("Expected body %v, got %v", exp, resp.Body.String())
+		}
+	})
+
+	t.Run("catch-all defined", func(t *testing.T) {
+		s := server.New()
+		s.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("ok"))
+		})
+
+		resp := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/notregistered/one", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if exp := "ok"; !strings.Contains(resp.Body.String(), exp) {
+			t.Errorf("Expected body %v, got %v", exp, resp.Body.String())
+		}
+	})
+
+	t.Run("root with method defined", func(t *testing.T) {
+		s := server.New()
+		s.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("ok"))
+		})
+
+		resp := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/enters/the/get", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if exp := "ok"; !strings.Contains(resp.Body.String(), exp) {
+			t.Errorf("Expected GET body %v, got %v", exp, resp.Body.String())
+		}
+
+		resp = httptest.NewRecorder()
+		req = httptest.NewRequest(http.MethodPost, "/post/one", nil)
+		s.Handler().ServeHTTP(resp, req)
+
+		if exp := "not found"; !strings.Contains(resp.Body.String(), exp) {
+			t.Errorf("Expected POST body %v, got %v", exp, resp.Body.String())
+		}
+	})
+
+}

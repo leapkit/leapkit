@@ -36,6 +36,7 @@ type router struct {
 	prefix     string
 	mux        *http.ServeMux
 	middleware []Middleware
+	rootSet    bool
 }
 
 // Use allows to specify a middleware that should be executed for all the handlers
@@ -53,10 +54,6 @@ func (rg *router) ResetMiddleware() {
 // in the group with the middleware that should be executed for the handler
 // specified in the group.
 func (rg *router) Handle(pattern string, handler http.Handler) {
-	for i := len(rg.middleware) - 1; i >= 0; i-- {
-		handler = rg.middleware[i](handler)
-	}
-
 	method := ""
 	route := pattern
 
@@ -66,6 +63,16 @@ func (rg *router) Handle(pattern string, handler http.Handler) {
 	}
 
 	pattern = fmt.Sprintf("%s %s", method, path.Join(rg.prefix, route))
+	pattern = strings.Trim(pattern, " ")
+
+	// When this route is set we mark the rootSet as true
+	rg.rootSet = rg.rootSet || (pattern == "/")
+
+	// Wrapping with the middleware
+	for i := len(rg.middleware) - 1; i >= 0; i-- {
+		handler = rg.middleware[i](handler)
+	}
+
 	rg.mux.Handle(pattern, handler)
 }
 
