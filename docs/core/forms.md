@@ -22,7 +22,7 @@ rules := validate.Fields(
 )
 
 verrs := form.Validate(req, rules)
-if len(verrs) > 0 {
+if verrs.HasAny() {
 	 // handle validation errors...
 }
 ```
@@ -37,6 +37,12 @@ A field can have multiple validations specified (Required, Length, Regex ...) an
 
 ### Errors
 The output from the Validate function is a `validate.Errors` variable, which internally is a `map[string][]error` and provides some helpful functions. This structure allows to return multiple errors for a single field.
+
+Errors has three useful methods:
+
+- `HasAny()` returns true if there are any errors.
+- `Has(field string)` returns true if there are errors for the given field.
+- `StringFieldFor(field string)` returns a string with all the errors for the given field.
 
 ### Built-in Rules
 
@@ -59,9 +65,6 @@ func LessThan(value float64, message ...string) Rule
 func LessThanOrEqualTo(value float64, message ...string) Rule
 func GreaterThan(value float64, message ...string) Rule
 func GreaterThanOrEqualTo(value float64, message ...string) Rule
-
-// UUID Rule:
-func ValidUUID(message ...string) Rule
 
 // Time Rules:
 func TimeEqualTo(u time.Time, message ...string) Rule
