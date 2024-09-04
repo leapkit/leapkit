@@ -19,6 +19,9 @@ var (
 )
 
 func handlerName(name string) string {
+	_, name = path.Split(name)
+	name = strings.TrimSuffix(name, filepath.Ext(name))
+
 	var g []string
 	p := strings.Fields(name)
 	for _, value := range p {
@@ -45,6 +48,8 @@ func Handler(name string) error {
 
 	// Create action.go
 	fileName := strings.ToLower(path.Base(name))
+	fileName = strings.TrimSuffix(fileName, filepath.Ext(name))
+
 	file, err := os.Create(filepath.Join(actionsFolder, folder, fileName+".go"))
 	if err != nil {
 		return err
