@@ -22,38 +22,20 @@ func (a *adapter) Run(timestamp, name, sql string) error {
 		return fmt.Errorf("error running migration: %w", err)
 	}
 
-	tx, err := a.conn.Begin()
-	if err != nil {
-		return fmt.Errorf("error running migration: %w", err)
-	}
-
-	defer func() {
-		// If there is an error, rollback the transaction.
-		if err != nil {
-			fmt.Printf("🚨 Rolling back migration: %s\n", err.Error())
-			tx.Rollback()
-		}
-	}()
-
 	if exists {
 		return nil
 	}
 
-	_, err = tx.Exec(sql)
+	_, err = a.conn.Exec(sql)
 	if err != nil {
 		err = fmt.Errorf("error running migration: %w", err)
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO schema_migrations (timestamp) VALUES ($1);", timestamp)
+	_, err = a.conn.Exec("INSERT INTO schema_migrations (timestamp) VALUES ($1);", timestamp)
 	if err != nil {
 		err = fmt.Errorf("error running migration: %w", err)
 		return err
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		return fmt.Errorf("error running migration: %w", err)
 	}
 
 	fmt.Printf("✅ Migration %v (%v) applied.\n", name, timestamp)

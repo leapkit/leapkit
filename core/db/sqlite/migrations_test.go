@@ -99,33 +99,4 @@ func TestRun(t *testing.T) {
 			t.Fatal("users table not found")
 		}
 	})
-
-	t.Run("migration partially ok", func(t *testing.T) {
-		td := t.TempDir()
-		conn, err := sql.Open("sqlite3", filepath.Join(td, "database.db"))
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		adapter := sqlite.New(conn)
-		err = adapter.Setup()
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = adapter.Run("20210101000000", "name", `
-			CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);
-			"broken sql here!"!!;
-		`)
-		if err == nil {
-			t.Fatal("should fail here")
-		}
-
-		var name string
-		row := conn.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='users';")
-		err = row.Scan(&name)
-		if err == nil {
-			t.Fatal("users table should not exist")
-		}
-	})
 }
