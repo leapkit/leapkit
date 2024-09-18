@@ -63,3 +63,12 @@ func (s *saver) Flush() {
 
 	f.Flush()
 }
+
+func (s *saver) CloseNotify() <-chan bool {
+	cn, ok := s.w.(http.CloseNotifier)
+	if !ok {
+		return nil
+	}
+
+	return cn.CloseNotify()
+}
