@@ -54,3 +54,12 @@ func (s *saver) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 
 	return h.Hijack()
 }
+
+func (s *saver) Flush() {
+	f, ok := s.w.(http.Flusher)
+	if !ok {
+		return
+	}
+
+	f.Flush()
+}
