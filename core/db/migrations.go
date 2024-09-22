@@ -7,32 +7,12 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-
-	"github.com/leapkit/leapkit/core/db/postgres"
-	"github.com/leapkit/leapkit/core/db/sqlite"
-	"github.com/mattn/go-sqlite3"
 )
-
-// migratorFor the adapter for the passed SQL connection
-// based on the driver name.
-func migratorFor(conn *sql.DB) any {
-	switch conn.Driver().(type) {
-	case *sqlite3.SQLiteDriver:
-		return sqlite.New(conn)
-	default:
-		return postgres.New(conn)
-	}
-}
 
 // RunMigrationsDir receives a folder and a database URL
 // to apply the migrations to the database.
 func RunMigrationsDir(dir string, conn *sql.DB) error {
-	migrator := migratorFor(conn).(Migrator)
-	err := migrator.Setup()
-	if err != nil {
-		return fmt.Errorf("error setting up migrations: %w", err)
-	}
-
+	migrator := NewMigrator(conn)
 	exp := regexp.MustCompile("(\\d{14})_(.*).sql")
 	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -72,7 +52,7 @@ func RunMigrations(fs embed.FS, conn *sql.DB) error {
 		return fmt.Errorf("error reading migrations directory: %w", err)
 	}
 
-	migrator := migratorFor(conn).(Migrator)
+	migrator := NewMigrator(conn)
 	err = migrator.Setup()
 	if err != nil {
 		return fmt.Errorf("error setting up migrations: %w", err)
