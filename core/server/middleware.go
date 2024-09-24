@@ -43,6 +43,15 @@ func (lw *loggerWriter) WriteHeader(statusCode int) {
 	lw.ResponseWriter.WriteHeader(statusCode)
 }
 
+func (w *loggerWriter) Flush() {
+	f, ok := w.ResponseWriter.(http.Flusher)
+	if !ok {
+		return
+	}
+
+	f.Flush()
+}
+
 // logger is a middleware that logs the request method and URL
 // and the time it took to process the request.
 func logger(next http.Handler) http.Handler {
