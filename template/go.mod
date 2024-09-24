@@ -3,7 +3,7 @@ module github.com/leapkit/leapkit/template
 go 1.22
 
 require (
-	github.com/leapkit/leapkit/core v0.0.36
+	github.com/leapkit/leapkit/core v0.0.37
 	github.com/mattn/go-sqlite3 v1.14.23
 )
 

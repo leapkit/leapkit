@@ -18,7 +18,7 @@ go run ./cmd/setup
 
 ```sh
 # Building TailwindCSS with tailo
-> go run github.com/paganotoni/tailo/cmd/build@a4899cd
+> go run github.com/paganotoni/tailo/cmd/build@v1.0.8
 
 # Building the app
 > go build -tags osusergo,netgo -buildvcs=false -o bin/app ./cmd/app
@@ -29,7 +29,7 @@ go run ./cmd/setup
 To run the application in development mode execute:
 
 ```sh
-kit dev
+> kit dev
 ```
 
 And open `http://localhost:3000` in your browser.
@@ -37,5 +37,5 @@ And open `http://localhost:3000` in your browser.
 ### Generating a migration
 
 ```sh
-go run github.com/leapkit/leapkit/core/cmd/generate@latest migration
+> kit g migration [name]
 ```
