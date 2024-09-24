@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/leapkit/leapkit/core/db"
-	_ "modernc.org/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func TestSetup(t *testing.T) {
