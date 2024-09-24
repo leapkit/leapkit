@@ -11,7 +11,7 @@ import (
 
 func TestSetup(t *testing.T) {
 	td := t.TempDir()
-	conn, err := sql.Open("sqlite", filepath.Join(td, "database.db"))
+	conn, err := sql.Open("sqlite3", filepath.Join(td, "database.db"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func TestSetup(t *testing.T) {
 func TestRun(t *testing.T) {
 	t.Run("migration not found", func(t *testing.T) {
 		td := t.TempDir()
-		conn, err := sql.Open("sqlite", filepath.Join(td, "database.db"))
+		conn, err := sql.Open("sqlite3", filepath.Join(td, "database.db"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -71,7 +71,7 @@ func TestRun(t *testing.T) {
 
 	t.Run("migration found", func(t *testing.T) {
 		td := t.TempDir()
-		conn, err := sql.Open("sqlite", filepath.Join(td, "database.db"))
+		conn, err := sql.Open("sqlite3", filepath.Join(td, "database.db"))
 		if err != nil {
 			t.Fatal(err)
 		}
