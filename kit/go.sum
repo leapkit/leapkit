@@ -4,8 +4,7 @@ github.com/leapkit/leapkit/core v0.0.36 h1:z+ImNOB/AIS8ous43/qeACzZhM8x1plquyiDy
 github.com/leapkit/leapkit/core v0.0.36/go.mod h1:9yNcjlnZ30jWT+B+9qUWPF/OXPyN8u13nHFDS9N11aM=
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
-github.com/mattn/go-sqlite3 v1.14.22 h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=
-github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
+github.com/mattn/go-sqlite3 v1.14.23 h1:gbShiuAP1W5j9UOksQ06aiiqPMxYecovVGwmTxWtuw0=
 github.com/paganotoni/tailo v1.0.7 h1:ZOdnt8ymp/vxLi4wlaXJj5+o89PeLmvtnVMKhNyhWj8=
 github.com/paganotoni/tailo v1.0.7/go.mod h1:EJj1Kec68hmveOWyIZFS6GGqFtIj0goWQtxou6wLx8U=
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=

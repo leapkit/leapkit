@@ -1,22 +1,22 @@
-package sqlite_test
+package db_test
 
 import (
 	"database/sql"
 	"path/filepath"
 	"testing"
 
-	"github.com/leapkit/leapkit/core/db/sqlite"
+	"github.com/leapkit/leapkit/core/db"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func TestSetup(t *testing.T) {
 	td := t.TempDir()
-	conn, err := sql.Open("sqlite3", filepath.Join(td, "database.db"))
+	conn, err := sql.Open("sqlite", filepath.Join(td, "database.db"))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	adapter := sqlite.New(conn)
+	adapter := db.NewMigrator(conn)
 	err = adapter.Setup()
 	if err != nil {
 		t.Fatal(err)
@@ -45,12 +45,12 @@ func TestSetup(t *testing.T) {
 func TestRun(t *testing.T) {
 	t.Run("migration not found", func(t *testing.T) {
 		td := t.TempDir()
-		conn, err := sql.Open("sqlite3", filepath.Join(td, "database.db"))
+		conn, err := sql.Open("sqlite", filepath.Join(td, "database.db"))
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		adapter := sqlite.New(conn)
+		adapter := db.NewMigrator(conn)
 		err = adapter.Setup()
 		if err != nil {
 			t.Fatal(err)
@@ -71,12 +71,12 @@ func TestRun(t *testing.T) {
 
 	t.Run("migration found", func(t *testing.T) {
 		td := t.TempDir()
-		conn, err := sql.Open("sqlite3", filepath.Join(td, "database.db"))
+		conn, err := sql.Open("sqlite", filepath.Join(td, "database.db"))
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		adapter := sqlite.New(conn)
+		adapter := db.NewMigrator(conn)
 		err = adapter.Setup()
 		if err != nil {
 			t.Fatal(err)

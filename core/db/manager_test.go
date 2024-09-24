@@ -1,10 +1,10 @@
-package sqlite_test
+package db_test
 
 import (
 	"os"
 	"testing"
 
-	"github.com/leapkit/leapkit/core/db/sqlite"
+	"github.com/leapkit/leapkit/core/db"
 )
 
 func TestCreate(t *testing.T) {
@@ -14,8 +14,7 @@ func TestCreate(t *testing.T) {
 	os.Chdir(f)
 	defer os.Chdir(wd)
 
-	m := sqlite.NewManager("database.db?_fk=true")
-	err := m.Create()
+	err := db.Create("database.db?_fk=true")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,13 +37,12 @@ func TestDrop(t *testing.T) {
 	os.Chdir(f)
 	defer os.Chdir(wd)
 
-	m := sqlite.NewManager("database.db?_fk=true")
-	err := m.Create()
+	err := db.Create("database.db?_fk=true")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = m.Drop()
+	err = db.Drop("database.db?_fk=true")
 	if err != nil {
 		t.Fatal(err)
 	}
