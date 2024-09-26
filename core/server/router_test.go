@@ -400,16 +400,8 @@ func TestCatchAll(t *testing.T) {
 }
 
 func TestRegisterErrorHandler(t *testing.T) {
-	s := server.New()
-	s.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("ok"))
-	})
-	s.HandleFunc("GET /boom/{$}", func(w http.ResponseWriter, r *http.Request) {
-		empty := [][]byte{}
-		w.Write(empty[1])
-	})
-
 	t.Run("register 404 error page", func(t *testing.T) {
+		s := server.New()
 		// request using the default 404 page.
 		resp := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/not/found/", nil)
@@ -420,9 +412,11 @@ func TestRegisterErrorHandler(t *testing.T) {
 		}
 
 		// Register custom 404 page
-		server.RegisterErrorHandler(http.StatusNotFound, func(w http.ResponseWriter, r *http.Request, _ error) {
-			w.Write([]byte("This is the custom not found page"))
-		})
+		s = server.New(
+			server.WithErrorHandler(http.StatusNotFound, func(w http.ResponseWriter, r *http.Request, _ error) {
+				w.Write([]byte("This is the custom not found page"))
+			}),
+		)
 
 		resp = httptest.NewRecorder()
 		req = httptest.NewRequest(http.MethodGet, "/not/found/", nil)
@@ -434,6 +428,13 @@ func TestRegisterErrorHandler(t *testing.T) {
 	})
 
 	t.Run("register 500 error page", func(t *testing.T) {
+		boomHandler := func(w http.ResponseWriter, r *http.Request) {
+			empty := [][]byte{}
+			w.Write(empty[1])
+		}
+
+		s := server.New()
+		s.HandleFunc("GET /boom/{$}", boomHandler)
 		// request using the default 500 page.
 		resp := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/boom/", nil)
@@ -444,16 +445,19 @@ func TestRegisterErrorHandler(t *testing.T) {
 		}
 
 		// Register custom 500 page
-		server.RegisterErrorHandler(http.StatusInternalServerError, func(w http.ResponseWriter, r *http.Request, err error) {
-			fmt.Fprintf(w, "This is the custom internal server error page :D : %v", err)
-		})
+		s = server.New(
+			server.WithErrorHandler(http.StatusInternalServerError, func(w http.ResponseWriter, r *http.Request, err error) {
+				fmt.Fprintf(w, "This is the custom internal server error page :D : %v", err)
+			}),
+		)
+		s.HandleFunc("GET /boom/{$}", boomHandler)
 
 		resp = httptest.NewRecorder()
 		req = httptest.NewRequest(http.MethodGet, "/boom/", nil)
 		s.Handler().ServeHTTP(resp, req)
 
-		if resp.Body.String() != "This is the custom internal server error page :D : runtime error: index out of range [1] with length 0" {
-			t.Errorf("Expected `This is the custom internal server error page :D : runtime error: index out of range [1] with length 0`, got %v", strings.TrimSpace(resp.Body.String()))
+		if body := strings.TrimSpace(resp.Body.String()); body != "This is the custom internal server error page :D : runtime error: index out of range [1] with length 0" {
+			t.Errorf("Expected 'This is the custom internal server error page :D : runtime error: index out of range [1] with length 0', got %v", body)
 		}
 	})
 }

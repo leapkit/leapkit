@@ -12,10 +12,10 @@ func Error(w http.ResponseWriter, err error, HTTPStatus int) {
 	http.Error(w, err.Error(), HTTPStatus)
 }
 
-type errorHandler func(w http.ResponseWriter, r *http.Request, err error)
+type errorHandlerFn func(w http.ResponseWriter, r *http.Request, err error)
 
 var (
-	errorHandlerMap = map[int]errorHandler{
+	errorHandlerMap = map[int]errorHandlerFn{
 		http.StatusNotFound: func(w http.ResponseWriter, r *http.Request, err error) {
 			w.Write([]byte("404 page not found"))
 		},
@@ -26,7 +26,3 @@ var (
 		},
 	}
 )
-
-func RegisterErrorHandler(status int, fn errorHandler) {
-	errorHandlerMap[status] = fn
-}
