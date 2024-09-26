@@ -27,6 +27,6 @@ var (
 	}
 )
 
-func CustomErrorPage(status int, fn errorHandler) {
+func RegisterErrorHandler(status int, fn errorHandler) {
 	errorHandlerMap[status] = fn
 }
