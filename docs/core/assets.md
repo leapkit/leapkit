@@ -11,27 +11,23 @@ This handler is capable of a few things that are useful for web development:
 
 ## Usage
 
-The usage of the assets package is centered around the Assets manager instance.
+To set our assets into our Leapkit app, we need to use the `WithAssets` server option. It receives an FS parameter that will help locate template files to be served.
 
 ```go
 
-// Assets is the manager for the public assets
-// it allows to watch for changes and reload the assets
-// when changes are made.
-Assets = assets.NewManager(public.Files)
-...
-// Register the assets handler
-// This handler will serve the files from the public folder
-...
-	r.HandleFunc(Assets.HandlerPattern(), Assets.HandlerFn)
-}
+//go:embed templates/**/*.html
+var templatesFS embed.FS
+
+r := server.New(
+	server.WithAssets(templatesFS),
+)
 ```
 
 ## Fingerprinting Helper
-The assets manager provides a PathFor helper that can be used in your templates to use the fingerprinted version of an asset.
+The `server.WithAssets` option also setus the `assetsPath` helper that can be used in your templates to use the fingerprinted version of an asset.
 
 ```html
-<link rel="stylesheet" href="<%= assets.PathFor("/css/app.css") %>">
+<link rel="stylesheet" href="<%= assetPath(`/css/app.css`) %>">
 // will output something like
 <link rel="stylesheet" href="/css/app-cafe123ff22112eedd.css">
 ```

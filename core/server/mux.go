@@ -10,9 +10,8 @@ var defaultCatchAllHandler http.Handler = http.HandlerFunc(func(w http.ResponseW
 		return
 	}
 
-	// TODO: Support custom 404 or have a default one.
 	w.WriteHeader(http.StatusNotFound)
-	w.Write([]byte("404 page not found"))
+	errorHandlerMap[http.StatusNotFound](w, r, nil)
 })
 
 // Rood routeGroup is a group of routes with a common prefix and middleware

@@ -94,7 +94,8 @@ func recoverer(next http.Handler) http.Handler {
 					os.Stderr.Write(debug.Stack())
 				}
 
-				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				w.WriteHeader(http.StatusInternalServerError)
+				errorHandlerMap[http.StatusInternalServerError](w, r, fmt.Errorf("%s", err))
 			}
 		}()
 

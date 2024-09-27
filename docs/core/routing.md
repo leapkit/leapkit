@@ -69,6 +69,27 @@ WithPort allows to specify the port of the server. By default its `3000`.
 ### WithSession
 WithSession allows to set a new session into the server. [Read more](/core/session.html).
 
+### WithAssets
+WithAssets allows to set assets into the server. [Read more](/core/assets.html).
+
+### WithErrorHandler
+WithErrorHandler allows you to set your custom 404 or 500 pages
+
+```go
+r := server.New(
+	server.WithErrorHandler(http.StatusNotFound, notFoundErrorHandler),
+	server.WithErrorHandler(http.StatusInternalServerError, notFoundErrorHandler),
+)
+// ...
+func notFoundErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
+	w.Write([]byte("Oops! We couldn't find the page you were looking for"))
+}
+
+func internalServerErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
+	w.Write([]byte("There were some technical issues while processing your request"))
+}
+```
+
 ## Middleware
 The Router returned by the `server.New` function has a `Use` method that allows you to add middleware to the server.
 
@@ -82,13 +103,12 @@ func headerMW(next http.Handler) http.Handler {
 	})
 }
 
-...
+// ...
 	s.Use(headerMW)
 	s.HandleFunc("/hello", helloHandler)
 
 	fmt.Println("Server started at", s.Addr())
-...
-}
+// ...
 ```
 
 ## Grouping Routes

@@ -57,3 +57,9 @@ func WithAssets(embedded fs.FS) Option {
 		m.Folder(manager.HandlerPattern(), manager)
 	}
 }
+
+func WithErrorHandler(status int, errorHandlerFn errorHandlerFn) Option {
+	return func(m *mux) {
+		errorHandlerMap[status] = errorHandlerFn
+	}
+}
