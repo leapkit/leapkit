@@ -1,6 +1,7 @@
 package db
 
 import (
+	"cmp"
 	"database/sql"
 	"fmt"
 	"net/url"
@@ -12,7 +13,7 @@ import (
 var (
 	// postgresURLExp is the regular expression to extract the database name
 	// and the user credentials from the database URL.
-	postgresURLExp = regexp.MustCompile("postgres://(.*):(.*)@(.*):(.*)/(.*)")
+	postgresURLExp = regexp.MustCompile(`postgres://(.*):(.*)@(.*):(.*)/([^?]*)`)
 )
 
 // Create a new database based on the passed URL.
@@ -96,17 +97,19 @@ func dropSQLite(conURL string) error {
 
 func dropPostgres(conURL string) error {
 	matches := postgresURLExp.FindStringSubmatch(conURL)
-	if len(matches) != 6 {
+	if len(matches) != 3 || matches[1] == "" {
 		return fmt.Errorf("invalid database url: %s", conURL)
 	}
 
-	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@%s:%s/postgres?sslmode=disable", matches[1], matches[2], matches[3], matches[4]))
+	db, err := sql.Open("postgres", matches[1])
 	if err != nil {
 		return fmt.Errorf("error connecting to database: %w", err)
 	}
 
+	dbName := cmp.Or(matches[2], "postgres")
+
 	var dbexists int
-	row := db.QueryRow("SELECT COUNT(datname) FROM pg_database WHERE datname ilike $1", matches[5])
+	row := db.QueryRow("SELECT COUNT(datname) FROM pg_database WHERE datname ilike $1", dbName)
 	err = row.Scan(&dbexists)
 	if err != nil {
 		return err
@@ -116,7 +119,7 @@ func dropPostgres(conURL string) error {
 		return nil
 	}
 
-	_, err = db.Exec(fmt.Sprintf("DROP DATABASE %s", matches[5]))
+	_, err = db.Exec(fmt.Sprintf("DROP DATABASE %s", dbName))
 	if err != nil {
 		return fmt.Errorf("error dropping database: %w", err)
 	}
