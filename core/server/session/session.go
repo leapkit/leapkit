@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
+	"github.com/leapkit/leapkit/core/server/internal/writer"
 )
 
 // ctxKey is the value used to store the session
@@ -61,9 +62,9 @@ func (s *session) Register(w http.ResponseWriter, r *http.Request) (http.Respons
 	r = r.WithContext(context.WithValue(r.Context(), ctxKey, session))
 
 	w = &saver{
-		w:     w,
-		req:   r,
-		store: session,
+		ResponseWriter: &writer.ResponseWriter{ResponseWriter: w},
+		req:            r,
+		store:          session,
 	}
 
 	return w, r

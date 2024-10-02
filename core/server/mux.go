@@ -55,7 +55,7 @@ func (s *mux) Handler() http.Handler {
 		s.Handle("/", defaultCatchAllHandler)
 	}
 
-	return s.mux
+	return s
 }
 
 func (s *mux) Addr() string {
