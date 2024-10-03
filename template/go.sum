@@ -15,8 +15,8 @@ github.com/gorilla/securecookie v1.1.2 h1:YCIWL56dvtr73r6715mJs5ZvhtnY73hBvEF8kX
 github.com/gorilla/securecookie v1.1.2/go.mod h1:NfCASbcHqRSY+3a8tlWJwsQap2VX5pwzwo4h3eOamfo=
 github.com/gorilla/sessions v1.3.0 h1:XYlkq7KcpOB2ZhHBPv5WpjMIxrQosiZanfoy1HLZFzg=
 github.com/gorilla/sessions v1.3.0/go.mod h1:ePLdVu+jbEgHH+KWw8I1z2wqd0BAdAQh/8LRvBeoNcQ=
-github.com/leapkit/leapkit/core v0.0.37 h1:6cnaI2+KY28PpI1ihOYu3AwrweIs63rNxlP6MUNNX7w=
-github.com/leapkit/leapkit/core v0.0.37/go.mod h1:NRD6W/0lAbCB7ewQJURh+8f34bVqgtDnLM4xQHlrWlQ=
+github.com/leapkit/leapkit/core v0.0.38 h1:5Dk7RRR118nldIB4oef5bMzzgEhfGBZk+1N2l6oNzKw=
+github.com/leapkit/leapkit/core v0.0.38/go.mod h1:NRD6W/0lAbCB7ewQJURh+8f34bVqgtDnLM4xQHlrWlQ=
 github.com/mattn/go-sqlite3 v1.14.23 h1:gbShiuAP1W5j9UOksQ06aiiqPMxYecovVGwmTxWtuw0=
 github.com/mattn/go-sqlite3 v1.14.23/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
