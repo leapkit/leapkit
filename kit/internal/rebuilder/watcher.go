@@ -28,7 +28,12 @@ func runWatcher(changed chan bool) {
 					return
 				}
 
-				if event.Has(fsnotify.Write) {
+				if !config.isWatchedExtension(filepath.Ext(event.Name)) {
+					continue
+				}
+
+				if event.Has(fsnotify.Write) || event.Has(fsnotify.Create) ||
+					event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
 					changed <- true
 				}
 			case err, ok := <-watcher.Errors:
@@ -54,19 +59,11 @@ func buildWatcher() (*fsnotify.Watcher, error) {
 	// watcher so it notifies the errors that it needs to
 	// restart.
 	err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
+		if !info.IsDir() || config.isExcludedPath(path) {
 			return nil
 		}
 
-		if config.isExcludedPath(path) {
-			return nil
-		}
-
-		if !config.isWatchedExtension(filepath.Ext(path)) {
-			return nil
-		}
-
-		return watcher.Add(path)
+		return watcher.AddWith(path)
 	})
 
 	if err != nil {
