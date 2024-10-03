@@ -1,7 +1,7 @@
 github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
 github.com/fsnotify/fsnotify v1.7.0/go.mod h1:40Bi/Hjc2AVfZrqy+aj+yEI+/bRxZnMJyTJwOpGvigM=
-github.com/leapkit/leapkit/core v0.0.38 h1:5Dk7RRR118nldIB4oef5bMzzgEhfGBZk+1N2l6oNzKw=
-github.com/leapkit/leapkit/core v0.0.38/go.mod h1:NRD6W/0lAbCB7ewQJURh+8f34bVqgtDnLM4xQHlrWlQ=
+github.com/leapkit/leapkit/core v0.0.39 h1:LalbH729JNS2PDPqB7kLbS0SIXVOcYoY8TLEwlnc0jA=
+github.com/leapkit/leapkit/core v0.0.39/go.mod h1:NRD6W/0lAbCB7ewQJURh+8f34bVqgtDnLM4xQHlrWlQ=
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/mattn/go-sqlite3 v1.14.23 h1:gbShiuAP1W5j9UOksQ06aiiqPMxYecovVGwmTxWtuw0=
