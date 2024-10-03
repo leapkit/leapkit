@@ -13,6 +13,11 @@ import (
 // to apply the migrations to the database.
 func RunMigrationsDir(dir string, conn *sql.DB) error {
 	migrator := NewMigrator(conn)
+	err := migrator.Setup()
+	if err != nil {
+		return fmt.Errorf("error setting up migrations: %w", err)
+	}
+
 	exp := regexp.MustCompile("(\\d{14})_(.*).sql")
 	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
