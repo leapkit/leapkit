@@ -10,7 +10,7 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/leapkit/leapkit/core/server/internal/writer"
+	"github.com/leapkit/leapkit/core/server/internal/response"
 )
 
 // baseMiddleware is a list that holds the middleware list that will be executed
@@ -45,9 +45,9 @@ func logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		lw, ok := w.(*writer.ResponseWriter)
+		lw, ok := w.(*response.Writer)
 		if !ok {
-			lw = &writer.ResponseWriter{ResponseWriter: w}
+			lw = &response.Writer{ResponseWriter: w}
 		}
 
 		defer func() {

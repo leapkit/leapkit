@@ -8,7 +8,7 @@ import (
 
 	"io/fs"
 
-	"github.com/leapkit/leapkit/core/server/internal/writer"
+	"github.com/leapkit/leapkit/core/server/internal/response"
 )
 
 // Router is the interface that wraps the basic methods for a router
@@ -106,6 +106,6 @@ func (rg *router) Group(prefix string, rfn func(rg Router)) {
 }
 
 func (rg *router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w = &writer.ResponseWriter{ResponseWriter: w}
+	w = &response.Writer{ResponseWriter: w}
 	rg.mux.ServeHTTP(w, r)
 }

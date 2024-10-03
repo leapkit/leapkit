@@ -5,14 +5,14 @@ import (
 	"sync"
 
 	"github.com/gorilla/sessions"
-	"github.com/leapkit/leapkit/core/server/internal/writer"
+	"github.com/leapkit/leapkit/core/server/internal/response"
 )
 
 // saver takes care of automatically saving the session
 // when the response is written, this avoids having to
 // call session.Save() in every handler.
 type saver struct {
-	*writer.ResponseWriter
+	*response.Writer
 	req   *http.Request
 	store *sessions.Session
 	moot  sync.Mutex
