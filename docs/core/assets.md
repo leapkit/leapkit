@@ -18,7 +18,7 @@ To set our assets into our Leapkit app, we need to use the `WithAssets` server o
 //go:embed templates/**/*.html
 var templatesFS embed.FS
 
-r := server.New(
+s := server.New(
 	server.WithAssets(templatesFS),
 )
 ```
