@@ -9,6 +9,8 @@ import (
 	"os"
 	"runtime/debug"
 	"time"
+
+	"github.com/leapkit/leapkit/core/server/internal/response"
 )
 
 // baseMiddleware is a list that holds the middleware list that will be executed
@@ -31,50 +33,32 @@ func requestID(next http.Handler) http.Handler {
 	})
 }
 
-// loggerWriter is a wrapper around http.ResponseWriter that keeps track of the status code
-type loggerWriter struct {
-	http.ResponseWriter
-	status int
-}
-
-// WriteHeader methods overrides the ResponseWriter.WriteHeader method to capture the status code.
-func (lw *loggerWriter) WriteHeader(statusCode int) {
-	lw.status = statusCode
-	lw.ResponseWriter.WriteHeader(statusCode)
-}
-
-func (w *loggerWriter) Flush() {
-	f, ok := w.ResponseWriter.(http.Flusher)
-	if !ok {
-		return
-	}
-
-	f.Flush()
-}
-
 // logger is a middleware that logs the request method and URL
 // and the time it took to process the request.
 func logger(next http.Handler) http.Handler {
 	logger := slog.Default()
 	if os.Getenv("GO_ENV") == "production" {
-		// Using text logger in production
+		// Using json logger in production
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		lw := &loggerWriter{ResponseWriter: w}
+		lw, ok := w.(*response.Writer)
+		if !ok {
+			lw = &response.Writer{ResponseWriter: w}
+		}
 
 		defer func() {
-			lw.status = cmp.Or(lw.status, http.StatusOK)
+			status := cmp.Or(lw.Status, http.StatusOK)
 			logLevel := slog.LevelInfo
 
-			if lw.status >= http.StatusInternalServerError {
+			if status >= http.StatusInternalServerError {
 				logLevel = slog.LevelError
 			}
 
-			logger.Log(r.Context(), logLevel, "", "method", r.Method, "status", lw.status, "url", r.URL.Path, "took", time.Since(start))
+			logger.Log(r.Context(), logLevel, "", "method", r.Method, "status", status, "url", r.URL.Path, "took", time.Since(start))
 		}()
 
 		next.ServeHTTP(lw, r)
