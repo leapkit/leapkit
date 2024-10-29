@@ -19,7 +19,6 @@ var baseMiddleware = []Middleware{
 	setValuer,
 	requestID,
 	logger,
-	recoverer,
 }
 
 // Middleware is a function that receives a http.Handler and returns a http.Handler
@@ -69,20 +68,28 @@ func logger(next http.Handler) http.Handler {
 // The error stack trace is printed only when the application is in 'development' mode.
 func recoverer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		lw, ok := w.(*response.Writer)
+		if !ok {
+			lw = &response.Writer{ResponseWriter: w}
+		}
+
 		defer func() {
-			if err := recover(); err != nil {
+			if err := recover(); err != nil || lw.Status >= http.StatusInternalServerError {
 				slog.Error("panic", "error", err, "method", r.Method, "url", r.URL.Path)
 
 				if cmp.Or(os.Getenv("GO_ENV"), "development") == "development" {
 					os.Stderr.WriteString(fmt.Sprint(err, "\n"))
-					os.Stderr.Write(debug.Stack())
+					debug.PrintStack()
 				}
 
-				w.WriteHeader(http.StatusInternalServerError)
-				errorHandlerMap[http.StatusInternalServerError](w, r, fmt.Errorf("%s", err))
+				if lw.Status == 0 {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+
+				errorHandlerMap[http.StatusInternalServerError](lw, r, fmt.Errorf("%s", err))
 			}
 		}()
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(lw, r)
 	})
 }

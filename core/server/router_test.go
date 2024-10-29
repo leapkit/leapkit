@@ -428,36 +428,52 @@ func TestRegisterErrorHandler(t *testing.T) {
 	})
 
 	t.Run("register 500 error page", func(t *testing.T) {
-		boomHandler := func(w http.ResponseWriter, r *http.Request) {
-			empty := [][]byte{}
-			w.Write(empty[1])
-		}
+		t.Run("default 500 error page", func(t *testing.T) {
+			s := server.New()
+			s.HandleFunc("GET /boom/{$}", func(w http.ResponseWriter, r *http.Request) {
+				empty := [][]byte{}
+				w.Write(empty[1])
+			})
 
-		s := server.New()
-		s.HandleFunc("GET /boom/{$}", boomHandler)
-		// request using the default 500 page.
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/boom/", nil)
-		s.Handler().ServeHTTP(resp, req)
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/boom/", nil)
+			s.Handler().ServeHTTP(resp, req)
 
-		if body := strings.TrimSpace(resp.Body.String()); body != "runtime error: index out of range [1] with length 0" {
-			t.Errorf("Expected 'runtime error: index out of range [1] with length 0', got '%s'", body)
-		}
+			if body := strings.TrimSpace(resp.Body.String()); body != "runtime error: index out of range [1] with length 0" {
+				t.Errorf("Expected 'runtime error: index out of range [1] with length 0', got '%s'", body)
+			}
+		})
 
-		// Register custom 500 page
-		s = server.New(
-			server.WithErrorHandler(http.StatusInternalServerError, func(w http.ResponseWriter, r *http.Request, err error) {
-				fmt.Fprintf(w, "This is the custom internal server error page :D : %v", err)
-			}),
-		)
-		s.HandleFunc("GET /boom/{$}", boomHandler)
+		t.Run("custom 500 page", func(t *testing.T) {
+			s := server.New(
+				server.WithErrorHandler(http.StatusInternalServerError, func(w http.ResponseWriter, r *http.Request, err error) {
+					ctx := r.Context()
 
-		resp = httptest.NewRecorder()
-		req = httptest.NewRequest(http.MethodGet, "/boom/", nil)
-		s.Handler().ServeHTTP(resp, req)
+					value1 := ctx.Value("key_1").(bool)
+					value2 := ctx.Value("key_2").(bool)
+					value3 := ctx.Value("key_3").(bool)
 
-		if body := strings.TrimSpace(resp.Body.String()); body != "This is the custom internal server error page :D : runtime error: index out of range [1] with length 0" {
-			t.Errorf("Expected 'This is the custom internal server error page :D : runtime error: index out of range [1] with length 0', got %v", body)
-		}
+					w.Write([]byte(fmt.Sprintf("value_1: %v, value_2: %v, value_3: %v", value1, value2, value3)))
+				}),
+			)
+
+			s.Use(
+				server.InCtxMiddleware("key_1", true),
+				server.InCtxMiddleware("key_2", true),
+				server.InCtxMiddleware("key_3", true),
+			)
+
+			s.HandleFunc("GET /boom/{$}", func(w http.ResponseWriter, r *http.Request) {
+				panic("err")
+			})
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/boom/", nil)
+			s.Handler().ServeHTTP(resp, req)
+
+			if body := strings.TrimSpace(resp.Body.String()); body != "value_1: true, value_2: true, value_3: true" {
+				t.Errorf("Expected 'value_1: true, value_2: true, value_3: true', got %v", body)
+			}
+		})
 	})
 }

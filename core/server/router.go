@@ -70,6 +70,8 @@ func (rg *router) Handle(pattern string, handler http.Handler) {
 	// When this route is set we mark the rootSet as true
 	rg.rootSet = rg.rootSet || (pattern == "/")
 
+	handler = recoverer(handler)
+
 	// Wrapping with the middleware
 	for i := len(rg.middleware) - 1; i >= 0; i-- {
 		handler = rg.middleware[i](handler)
