@@ -58,8 +58,8 @@ func WithAssets(embedded fs.FS) Option {
 	}
 }
 
-func WithErrorHandler(status int, errorHandlerFn errorHandlerFn) Option {
+func WithErrorMessage(status int, message string) Option {
 	return func(m *mux) {
-		errorHandlerMap[status] = errorHandlerFn
+		errorMessageMap[status] = message
 	}
 }
