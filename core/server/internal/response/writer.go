@@ -10,7 +10,6 @@ import (
 // Writer is a custom wrapper around http.ResponseWriter used in the server package.
 // It also captures the HTTP status code and and implements the http.Flusher and http.Hijacker interfaces.
 type Writer struct {
-	wroteHeader bool
 	http.ResponseWriter
 	Status int
 }
@@ -18,10 +17,6 @@ type Writer struct {
 // WriteHeader sets the status code and calls the WriteHeader() method of http.ResponseWriter.
 func (w *Writer) WriteHeader(statusCode int) {
 	w.Status = statusCode
-	if !w.wroteHeader {
-		return
-	}
-	w.wroteHeader = true
 	w.ResponseWriter.WriteHeader(statusCode)
 }
 
