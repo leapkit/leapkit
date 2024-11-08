@@ -1,17 +1,14 @@
 package rebuilder
 
+// NoOpRunner is a runner that does nothing.
+var NoOpRunner = func() {}
+
 type Option func(*configuration)
 
 // WatchExtension sets the extensions to watch for changes.
 func WatchExtension(extensions ...string) Option {
 	return func(c *configuration) {
 		c.extensionsToWatch = extensions
-	}
-}
-
-func ExcludePaths(paths ...string) Option {
-	return func(c *configuration) {
-		c.excludedPaths = paths
 	}
 }
 
