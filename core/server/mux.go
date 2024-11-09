@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -10,8 +11,7 @@ var defaultCatchAllHandler http.Handler = http.HandlerFunc(func(w http.ResponseW
 		return
 	}
 
-	w.WriteHeader(http.StatusNotFound)
-	errorHandlerMap[http.StatusNotFound](w, r, nil)
+	Error(w, fmt.Errorf("404 page not found"), http.StatusNotFound)
 })
 
 // Rood routeGroup is a group of routes with a common prefix and middleware

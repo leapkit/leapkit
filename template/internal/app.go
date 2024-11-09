@@ -48,7 +48,6 @@ func New() Server {
 
 	r.Use(render.Middleware(
 		render.TemplateFS(tmpls, "internal"),
-
 		render.WithDefaultLayout("layout.html"),
 	))
 

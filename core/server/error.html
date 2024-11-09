@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LeapKit</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <main class="h-screen bg-gray-100 px-8 py-10">
+        <div class="flex flex-col items-center text-center h-full">
+            <h1 class="pb-2 text-2xl font-bold">🎒🚀 LeapKit</h1>
+            <div class="flex flex-col justify-center items-center h-full -mt-12">
+                <div class="mb-12 text-9xl font-bold">{{.status}}</div>
+                <h2 class="mb-4 text-3xl font-bold">{{.title}}</h2>
+                <p class="mb-9 h-12 max-w-lg tracking-wide text-gray-800">{{.description}}</p>
+                <a href="/" class="inline-flex items-center justify-center rounded-full bg-black p-4 text-white transition-colors duration-150 ease-in-out hover:bg-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 19.5-15-15m0 0v11.25m0-11.25h11.25" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </main>
+
+</html>
