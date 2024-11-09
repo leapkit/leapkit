@@ -346,6 +346,8 @@ func TestBaseMiddlewares(t *testing.T) {
 }
 
 func TestCatchAll(t *testing.T) {
+	expectedNotFoundText := "Something went wrong"
+
 	t.Run("no catch-all defined", func(t *testing.T) {
 		s := server.New()
 
@@ -353,7 +355,7 @@ func TestCatchAll(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/notregistered/one", nil)
 		s.Handler().ServeHTTP(resp, req)
 
-		if exp := "404 page not found"; !strings.Contains(resp.Body.String(), exp) {
+		if exp := expectedNotFoundText; !strings.Contains(resp.Body.String(), exp) {
 			t.Errorf("Expected body %v, got %v", exp, resp.Body.String())
 		}
 	})
@@ -391,39 +393,30 @@ func TestCatchAll(t *testing.T) {
 		req = httptest.NewRequest(http.MethodPost, "/post/one", nil)
 		s.Handler().ServeHTTP(resp, req)
 
-		if exp := "not found"; !strings.Contains(resp.Body.String(), exp) {
-			t.Errorf(": Expected body %v, got %v", exp, resp.Body.String())
+		if exp := expectedNotFoundText; !strings.Contains(resp.Body.String(), exp) {
+			t.Errorf("Expected body %v, got %v", exp, resp.Body.String())
 		}
 	})
 
 }
 
 func TestRegisterErrorMessages(t *testing.T) {
+	expectedNotFoundText := "Something went wrong"
+
 	t.Run("404 message", func(t *testing.T) {
-		t.Run("default message", func(t *testing.T) {
+		t.Run("default HTML page", func(t *testing.T) {
 			s := server.New()
 
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodGet, "/not/found/", nil)
 			s.Handler().ServeHTTP(resp, req)
 
-			if resp.Body.String() != "404 page not found" {
-				t.Errorf("Expected `404 page not found`, got '%v'", resp.Body.String())
+			if body := resp.Body.String(); !strings.Contains(body, expectedNotFoundText) {
+				t.Errorf("Expected body to contain %v, got %v", expectedNotFoundText, body)
 			}
-		})
 
-		t.Run("custom message", func(t *testing.T) {
-			// Register custom 404 message
-			s := server.New(
-				server.WithErrorMessage(http.StatusNotFound, "This is the custom not found page :D"),
-			)
-
-			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/not/found/", nil)
-			s.Handler().ServeHTTP(resp, req)
-
-			if resp.Body.String() != "This is the custom not found page :D" {
-				t.Errorf("Expected 'This is the custom not found page :D', got '%v'", resp.Body.String())
+			if h := resp.Header().Get("Content-Type"); h != "text/html; charset=utf-8" {
+				t.Errorf("Expected 'text/html; charset=utf-8', got '%v'", h)
 			}
 		})
 
@@ -445,12 +438,31 @@ func TestRegisterErrorMessages(t *testing.T) {
 				t.Errorf("Expected 'text/html; charset=utf-8', got '%v'", h)
 			}
 		})
+
+		t.Run("custom text message", func(t *testing.T) {
+			// Register custom 404 message
+			s := server.New(
+				server.WithErrorMessage(http.StatusNotFound, "This is the custom not found page :D"),
+			)
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/not/found/", nil)
+			s.Handler().ServeHTTP(resp, req)
+
+			if resp.Body.String() != "This is the custom not found page :D" {
+				t.Errorf("Expected 'This is the custom not found page :D', got '%v'", resp.Body.String())
+			}
+
+			if h := resp.Header().Get("Content-Type"); h != "text/plain; charset=utf-8" {
+				t.Errorf("Expected 'text/plain; charset=utf-8', got '%v'", h)
+			}
+		})
 	})
 
 	t.Run("500 message", func(t *testing.T) {
 		boomHandler := func(_ http.ResponseWriter, _ *http.Request) { panic("test error") }
 
-		t.Run("default message", func(t *testing.T) {
+		t.Run("default HTML page", func(t *testing.T) {
 			s := server.New()
 			s.HandleFunc("GET /boom/{$}", boomHandler)
 
@@ -458,26 +470,15 @@ func TestRegisterErrorMessages(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/boom/", nil)
 			s.Handler().ServeHTTP(resp, req)
 
-			if resp.Body.String() != "test error" {
-				t.Errorf("Expected 'test error', got '%v'", resp.Body.String())
+			if body := resp.Body.String(); !strings.Contains(body, "This page is having some technical hiccups.") {
+				t.Errorf("Expected body to contain %v, got %v", "This page is having some technical hiccups.", body)
+			}
+
+			if h := resp.Header().Get("Content-Type"); h != "text/html; charset=utf-8" {
+				t.Errorf("Expected 'text/html; charset=utf-8', got '%v'", h)
 			}
 		})
 
-		t.Run("custom message", func(t *testing.T) {
-			s := server.New(
-				server.WithErrorMessage(http.StatusInternalServerError, "This is the custom internal server error page :D"),
-			)
-
-			s.HandleFunc("GET /boom/{$}", boomHandler)
-
-			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/boom/", nil)
-			s.Handler().ServeHTTP(resp, req)
-
-			if resp.Body.String() != "This is the custom internal server error page :D" {
-				t.Errorf("Expected 'This is the custom internal server error page :D', got '%v'", resp.Body.String())
-			}
-		})
 		t.Run("custom HTML page", func(t *testing.T) {
 			htmlContent := `<html><body><div>This is the custom HTML 500 page :D</div></body></html>`
 			s := server.New(
@@ -498,5 +499,26 @@ func TestRegisterErrorMessages(t *testing.T) {
 				t.Errorf("Expected 'text/html; charset=utf-8', got '%v'", h)
 			}
 		})
+
+		t.Run("custom text message", func(t *testing.T) {
+			s := server.New(
+				server.WithErrorMessage(http.StatusInternalServerError, "This is the custom internal server error page :D"),
+			)
+
+			s.HandleFunc("GET /boom/{$}", boomHandler)
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/boom/", nil)
+			s.Handler().ServeHTTP(resp, req)
+
+			if resp.Body.String() != "This is the custom internal server error page :D" {
+				t.Errorf("Expected 'This is the custom internal server error page :D', got '%v'", resp.Body.String())
+			}
+
+			if h := resp.Header().Get("Content-Type"); h != "text/plain; charset=utf-8" {
+				t.Errorf("Expected 'text/plain; charset=utf-8', got '%v'", h)
+			}
+		})
+
 	})
 }

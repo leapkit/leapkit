@@ -9,7 +9,6 @@ import (
 	"github.com/leapkit/leapkit/core/db"
 	"github.com/leapkit/leapkit/core/render"
 	"github.com/leapkit/leapkit/core/server"
-	"github.com/leapkit/leapkit/template/internal/errors"
 	"github.com/leapkit/leapkit/template/internal/home"
 	"github.com/leapkit/leapkit/template/public"
 )
@@ -45,8 +44,6 @@ func New() Server {
 			cmp.Or(os.Getenv("SESSION_NAME"), "leapkit_session"),
 		),
 		server.WithAssets(public.Files),
-		server.WithErrorMessage(http.StatusNotFound, errors.NotFoundPage()),
-		server.WithErrorMessage(http.StatusInternalServerError, errors.InternalServerErrorPage()),
 	)
 
 	r.Use(render.Middleware(

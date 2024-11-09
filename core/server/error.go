@@ -2,9 +2,51 @@ package server
 
 import (
 	"cmp"
+	_ "embed"
+	"html/template"
 	"log/slog"
 	"net/http"
+	"strings"
 )
+
+var (
+	//go:embed error.html
+	htmlTemplate string
+
+	// errorMessageMap holds custom error messages based on HTTP status codes.
+	errorMessageMap = map[int]string{
+		http.StatusNotFound: errorTemplate(
+			http.StatusNotFound,
+			"Something went wrong",
+			"The page you are looking for was moved, removed, renamed or might never existed!",
+		),
+		http.StatusInternalServerError: errorTemplate(
+			http.StatusInternalServerError,
+			"We're fixing it",
+			"This page is having some technical hiccups. We know about the problem and we're working to get this back to normal quickly",
+		),
+	}
+)
+
+func errorTemplate(status int, title, description string) string {
+	t, err := template.New("error.html").Parse(htmlTemplate)
+	if err != nil {
+		return err.Error()
+	}
+
+	data := map[string]any{
+		"status":      status,
+		"title":       title,
+		"description": description,
+	}
+
+	var builder strings.Builder
+	if err := t.Execute(&builder, data); err != nil {
+		return err.Error()
+	}
+
+	return builder.String()
+}
 
 // Error writes an HTTP error response, logging the error message.
 // Unlike http.Error, this function determines the Content-Type dynamically
@@ -23,6 +65,3 @@ func Error(w http.ResponseWriter, err error, HTTPStatus int) {
 	w.WriteHeader(HTTPStatus)
 	w.Write(content)
 }
-
-// errorMessageMap holds custom error messages based on HTTP status codes.
-var errorMessageMap = map[int]string{}
