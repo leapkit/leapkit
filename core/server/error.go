@@ -3,6 +3,7 @@ package server
 import (
 	"cmp"
 	_ "embed"
+	"fmt"
 	"html/template"
 	"log/slog"
 	"net/http"
@@ -64,4 +65,11 @@ func Error(w http.ResponseWriter, err error, HTTPStatus int) {
 
 	w.WriteHeader(HTTPStatus)
 	w.Write(content)
+}
+
+// Errorf is a convenient function to write an HTTP error response with a formatted message
+// it under the hood uses fmt.Errorf and then calls Error to write the response and log the
+// error.
+func Errorf(w http.ResponseWriter, HTTPStatus int, message string, args ...any) {
+	Error(w, fmt.Errorf(message, args...), HTTPStatus)
 }

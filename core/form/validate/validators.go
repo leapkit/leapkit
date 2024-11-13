@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"errors"
 	"fmt"
+	"net/url"
 	"regexp"
 	"slices"
 	"strconv"
@@ -296,6 +297,33 @@ func TimeAfterOrEqualTo(u time.Time, message ...string) ValidatorFn {
 			}
 
 			return newError(fmt.Sprintf("Time should be after or equal to '%s'.", u.Format(time.DateOnly)), message...)
+		}
+
+		return nil
+	}
+}
+
+// EmailValid function validates that the values are valid emails (syntax only)
+func EmailValid(message ...string) ValidatorFn {
+	return func(values []string) error {
+		emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+
+		for _, val := range values {
+			if !emailRegex.MatchString(val) {
+				return newError(fmt.Sprintf("'%s' is not a valid email.", val), message...)
+			}
+		}
+
+		return nil
+	}
+}
+
+func URLValid(message ...string) ValidatorFn {
+	return func(values []string) error {
+		for _, val := range values {
+			if _, err := url.ParseRequestURI(val); err != nil {
+				return newError(fmt.Sprintf("'%s' is not a valid URL.", val), message...)
+			}
 		}
 
 		return nil
