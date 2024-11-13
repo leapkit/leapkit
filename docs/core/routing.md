@@ -1,5 +1,5 @@
 ---
-index: 0
+index: 1
 title: "Routing"
 ---
 
@@ -72,23 +72,8 @@ WithSession allows to set a new session into the server. [Read more](/core/sessi
 ### WithAssets
 WithAssets allows to set assets into the server. [Read more](/core/assets.html).
 
-### WithErrorHandler
-WithErrorHandler allows you to set your custom 404 or 500 pages
-
-```go
-r := server.New(
-	server.WithErrorHandler(http.StatusNotFound, notFoundErrorHandler),
-	server.WithErrorHandler(http.StatusInternalServerError, notFoundErrorHandler),
-)
-// ...
-func notFoundErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
-	w.Write([]byte("Oops! We couldn't find the page you were looking for"))
-}
-
-func internalServerErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
-	w.Write([]byte("There were some technical issues while processing your request"))
-}
-```
+### WithErrorMessage
+WithErrorMessage allows you to set your custom 404 or 500 messages. [Read more](/core/errors.html).
 
 ## Middleware
 The Router returned by the `server.New` function has a `Use` method that allows you to add middleware to the server.

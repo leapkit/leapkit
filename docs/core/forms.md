@@ -1,6 +1,6 @@
 ---
 title: Forms
-index: 1
+index: 3
 ---
 Leapkit ships with a form package that provides a flexible and reusable way to validate form data by defining a set of validation rules that can be applied to form fields.
 
