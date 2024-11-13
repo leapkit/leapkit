@@ -1,6 +1,6 @@
 ---
 title: Rendering
-index: 2
+index: 7
 ---
 
 Leapkit offers the `render` package which handles and renders the HTML files in your project.

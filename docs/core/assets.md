@@ -1,5 +1,5 @@
 ---
-index: 2
+index: 4
 title: "Assets"
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Environment Variables
-index: 2
+index: 5
 ---
 
 Leapkit provides a handy tool to load environment variables from a `.env` file. This feature is useful when you want to load your environment variables from a file instead of setting them directly in your system, like when you're in development mode.
