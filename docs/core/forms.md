@@ -75,7 +75,7 @@ func TimeAfterOrEqualTo(u time.Time, message ...string) Rule
 
 // Utility rules
 func EmailValid(message ...string) Rule
-func URLValir(message ...string) Rule
+func URLValid(message ...string) Rule
 ```
 
 ### Custom validation Rules
