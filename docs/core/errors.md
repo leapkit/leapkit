@@ -72,8 +72,6 @@ if err != nil {
 
 Leapkit provides a helper function to return an error message with a specific status code. This function is useful and acts as a shortcut for the `http.Error` function and logging the error.
 
-```
-
 ```go
 server.Error(w, err, http.StatusNotFound)
 ```
