@@ -72,6 +72,10 @@ func TimeBefore(u time.Time, message ...string) Rule
 func TimeBeforeOrEqualTo(u time.Time, message ...string) Rule
 func TimeAfter(u time.Time, message ...string) Rule
 func TimeAfterOrEqualTo(u time.Time, message ...string) Rule
+
+// Utility rules
+func EmailValid(message ...string) Rule
+func URLValir(message ...string) Rule
 ```
 
 ### Custom validation Rules
@@ -109,7 +113,7 @@ rules := validation.Fields(
 	// - Present
 	// - A valid email
 	// - Unique in the database
-	validation.Field("email", validate.Required(), validate.Email(), UniqueEmail(db))
+	validation.Field("email", validate.EmailValid(), validate.Email(), UniqueEmail(db))
   ...
 )
 ...
