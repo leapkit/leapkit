@@ -50,3 +50,38 @@ func notFoundPage() string {
 }
 ```
 
+## Error handling
+
+When an error needs to be handled in handlers you usually need to return the error message to the client and return. This is done typically the following way:
+
+```go
+func (w http.ResponseWriter, r *http.Request) {
+...
+if err != nil {
+	http.Error(w, err.Error(), http.StatusNotFound)
+	slog.Error("Error happened", "error", err)
+
+	return
+}
+
+...
+}
+```
+
+### server.Error
+
+Leapkit provides a helper function to return an error message with a specific status code. This function is useful and acts as a shortcut for the `http.Error` function and logging the error.
+
+```
+
+```go
+server.Error(w, err, http.StatusNotFound)
+```
+
+### server.Errorf
+
+In some cases you would want to format the error message before returning it. The `server.Errorf` function is a helper function that formats the error message and returns it with a specific status code.
+
+```go
+server.Errorf(w, http.StatusNotFound, "Error happened: %v", err.Error())
+```
