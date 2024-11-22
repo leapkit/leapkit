@@ -29,7 +29,7 @@ func generateWith(args []string) error {
 			return nil
 		}
 
-		err := generate.Migration(args[2])
+		err := generate.Migration(migrationsFolder, args[2])
 		if err != nil {
 			return err
 		}
