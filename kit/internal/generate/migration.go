@@ -10,18 +10,13 @@ import (
 )
 
 var (
-	// migrationsFolder is the base folder for migrations
-	migrationsFolder = filepath.Join(
-		"internal", "migrations",
-	)
-
 	// migrationTemplate is the template for generating migrations
 	//go:embed migration.sql.tmpl
 	migrationsTemplate string
 )
 
 // Migration generator function
-func Migration(name string) error {
+func Migration(migrationsFolder, name string) error {
 	timestamp := time.Now().Format("20060102150405")
 	fileName := fmt.Sprintf(
 		"%s_%s.sql",
