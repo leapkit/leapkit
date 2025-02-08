@@ -11,12 +11,18 @@ import (
 var watchExtensions string
 
 func init() {
-	flag.StringVar(&watchExtensions, "watch.extensions", ".go,.css,.js", "comma separated extensions to watch for recompile")
+	flag.StringVar(&watchExtensions, "watch.extensions", ".go", "comma separated extensions to watch for recompile")
 }
 
 func serve(_ []string) error {
-	exts := rebuilder.WatchExtension(strings.Split(watchExtensions, ",")...)
-	err := rebuilder.Start("cmd/app/main.go", exts)
+	err := rebuilder.Start(
+		"cmd/app/main.go",
+
+		// expecifying the extensions to watch for
+		rebuilder.WatchExtension(
+			strings.Split(watchExtensions, ",")...,
+		),
+	)
 	if err != nil {
 		fmt.Println("[error] starting the server:", err)
 	}
