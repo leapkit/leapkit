@@ -29,7 +29,7 @@ func Serve() error {
 
 	go watcher().Watch(reload)
 	for _, e := range entries {
-		go newProcess(e, reload).Run()
+		go newProcess(e).Run(reload)
 	}
 
 	signalChan := make(chan os.Signal, 1)

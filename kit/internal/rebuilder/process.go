@@ -14,11 +14,9 @@ type process struct {
 	entry
 	Stdout io.Writer
 	Stderr io.Writer
-
-	restart <-chan bool
 }
 
-func (p *process) Run() {
+func (p *process) Run(reloadSignal chan bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Fprintf(p.Stderr, "error running process: %v\n", r)
@@ -47,7 +45,7 @@ func (p *process) Run() {
 		}()
 
 		select {
-		case <-p.restart:
+		case <-reloadSignal:
 			fmt.Fprintln(p.Stdout, "Restarting process...")
 
 			if cmd.Process != nil {
@@ -56,10 +54,6 @@ func (p *process) Run() {
 
 			cancel()
 			<-errChan
-
-			for len(p.restart) > 0 {
-				<-p.restart
-			}
 
 			time.Sleep(200 * time.Millisecond)
 
@@ -74,11 +68,10 @@ func (p *process) Run() {
 	}
 }
 
-func newProcess(e entry, restart chan bool) *process {
+func newProcess(e entry) *process {
 	return &process{
-		entry:   e,
-		Stdout:  wrap(os.Stdout, e),
-		Stderr:  wrap(os.Stderr, e),
-		restart: restart,
+		entry:  e,
+		Stdout: wrap(os.Stdout, e),
+		Stderr: wrap(os.Stderr, e),
 	}
 }
