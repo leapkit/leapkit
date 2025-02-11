@@ -3,85 +3,82 @@ package rebuilder
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
 )
 
-func runApp(restart chan bool) {
-	e := entry{
-		ID:      0,
-		Name:    "app",
-		Command: "go build -o bin/app ./cmd/app",
+type process struct {
+	entry
+	Stdout io.Writer
+	Stderr io.Writer
+
+	restart <-chan bool
+}
+
+func (p *process) Run() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintf(p.Stderr, "error running process: %v\n", r)
+		}
+	}()
+
+	var mainCmd string
+	var args []string
+
+	fields := strings.Fields(p.Command)
+	if len(fields) > 0 {
+		mainCmd = fields[0]
+		args = fields[1:]
 	}
 
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
+		cmd := exec.CommandContext(ctx, mainCmd, args...)
+		cmd.Stdout = p.Stdout
+		cmd.Stderr = p.Stderr
+
+		errChan := make(chan error, 1)
 
 		go func() {
-			defer recoverFn()
-
-			execCommand(ctx, e)
-
-			e.Command = "bin/app"
-			execCommand(ctx, e)
+			errChan <- cmd.Run()
 		}()
 
-		<-restart
-		cancel()
+		select {
+		case <-p.restart:
+			fmt.Fprintln(p.Stdout, "Restarting process...")
 
-		fmt.Fprintln(wrap(os.Stderr, e), "Restarting the server...")
+			if cmd.Process != nil {
+				cmd.Process.Kill()
+			}
 
-		time.Sleep(200 * time.Millisecond)
+			cancel()
+			<-errChan
+
+			for len(p.restart) > 0 {
+				<-p.restart
+			}
+
+			time.Sleep(200 * time.Millisecond)
+
+		case err := <-errChan:
+			if err != nil {
+				fmt.Fprintf(p.Stderr, "process exited with error: %v\n", err)
+			}
+
+			cancel()
+			return
+		}
 	}
 }
 
-func runProcess(restart chan bool, e entry) {
-	for {
-		ctx, cancel := context.WithCancel(context.Background())
-
-		go func() {
-			defer recoverFn()
-			execCommand(ctx, e)
-		}()
-
-		<-restart
-		cancel()
-
-		fmt.Fprintln(wrap(os.Stderr, e), "Restarting process...")
-
-		time.Sleep(200 * time.Millisecond)
-	}
-}
-
-func recoverFn() {
-	var err error
-	r := recover()
-	if r == nil {
-		return
-	}
-
-	switch t := r.(type) {
-	case error:
-		err = t
-	case string:
-		err = fmt.Errorf("%s", t)
-	default:
-		err = fmt.Errorf("%+v", t)
-	}
-
-	fmt.Println(err)
-}
-
-func execCommand(ctx context.Context, e entry) {
-	fields := strings.Fields(e.Command)
-
-	cmd := exec.CommandContext(ctx, fields[0], fields[1:]...)
-	cmd.Stdout = wrap(os.Stdout, e)
-	cmd.Stderr = wrap(os.Stderr, e)
-
-	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(cmd.Stderr, "error running process: %v\n", err)
+func newProcess(e entry, restart chan bool) *process {
+	return &process{
+		entry:   e,
+		Stdout:  wrap(os.Stdout, e),
+		Stderr:  wrap(os.Stderr, e),
+		restart: restart,
 	}
 }

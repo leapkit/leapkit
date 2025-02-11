@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
 	"slices"
 	"strings"
 )
@@ -15,7 +14,7 @@ type entry struct {
 	Command string
 }
 
-func procfile() ([]entry, error) {
+func readProcfile() ([]entry, error) {
 	f, err := os.Open("Procfile")
 	if err != nil {
 		return nil, err
@@ -23,22 +22,23 @@ func procfile() ([]entry, error) {
 
 	defer f.Close()
 
-	rgx := regexp.MustCompile(`^([\w-]+):\s*(.+)$`)
 	var entries []entry
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		parts := rgx.FindStringSubmatch(scanner.Text())
-		if len(parts) == 3 {
-			entries = append(entries, entry{
-				ID:      len(entries) + 1,
-				Name:    parts[1],
-				Command: parts[2],
-			})
+		parts := strings.SplitN(scanner.Text(), ":", 2)
+		if len(parts) != 2 {
+			continue
 		}
+
+		entries = append(entries, entry{
+			ID:      len(entries) + 1,
+			Name:    parts[0],
+			Command: parts[1],
+		})
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("[error] Error reading Procfile: %w", err)
+		return nil, fmt.Errorf("error reading Procfile: %w", err)
 	}
 
 	slices.SortFunc(entries, func(a, b entry) int {
