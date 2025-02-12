@@ -30,6 +30,14 @@ func readProcfile() ([]entry, error) {
 			continue
 		}
 
+		exists := slices.ContainsFunc(entries, func(e entry) bool {
+			return e.Name == parts[0]
+		})
+
+		if exists {
+			continue
+		}
+
 		entries = append(entries, entry{
 			ID:      len(entries) + 1,
 			Name:    parts[0],

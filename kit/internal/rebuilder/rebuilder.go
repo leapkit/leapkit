@@ -18,13 +18,15 @@ func Serve() error {
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
-	reload := make(chan bool)
+
+	reloadCh := make([]chan bool, len(entries))
 	exitCh := make(chan error, len(entries))
 
-	go watcher().Watch(reload)
-	for _, e := range entries {
+	go new(watcher).Watch(reloadCh)
+	for i, e := range entries {
+		reloadCh[i] = make(chan bool)
 		go func() {
-			exitCh <- newProcess(e).Run(ctx, reload)
+			exitCh <- newProcess(e).Run(ctx, reloadCh[i])
 		}()
 	}
 

@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"strings"
 	"syscall"
-	"time"
 )
 
 func newProcess(e entry) *process {
@@ -26,7 +25,7 @@ type process struct {
 	Stderr io.Writer
 }
 
-func (p *process) Run(ctx context.Context, reloadSignal chan bool) error {
+func (p *process) Run(ctx context.Context, reload chan bool) error {
 	fields := strings.Fields(p.Command)
 	if len(fields) == 0 {
 		fmt.Fprintln(p.Stderr, "error: command is empty")
@@ -49,6 +48,8 @@ func (p *process) Run(ctx context.Context, reloadSignal chan bool) error {
 			return err
 		}
 
+		fmt.Fprintln(p.Stdout, "Started... (pid:", cmd.Process.Pid, ")")
+
 		errCh := make(chan error, 1)
 		go func() {
 			if err := cmd.Wait(); err != nil {
@@ -57,24 +58,39 @@ func (p *process) Run(ctx context.Context, reloadSignal chan bool) error {
 		}()
 
 		select {
-		case <-reloadSignal:
+		case <-reload:
 			fmt.Fprintln(p.Stdout, "Reloading...")
-			syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM)
-			cancel()
+			if err := Signal(cmd, syscall.SIGTERM, cancel); err != nil {
+				fmt.Fprintf(p.Stderr, "error sending SIGTERM: %v\n", err)
+			}
 		case <-ctx.Done():
 			fmt.Fprintln(p.Stdout, "Stopping...")
-			syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM)
-			cancel()
+			if err := Signal(cmd, syscall.SIGTERM, cancel); err != nil {
+				fmt.Fprintf(p.Stderr, "error sending SIGTERM: %v\n", err)
+			}
+
 			return nil
 		case err := <-errCh:
-			if err != nil {
-				fmt.Fprintf(p.Stderr, "process exited with error: %v\n", err)
-				cancel()
-				return err
-			}
+			fmt.Fprintf(p.Stderr, "process exited with error: %v\n", err)
+			cancel()
+			return err
 		}
 
-		time.Sleep(200 * time.Millisecond)
-		fmt.Fprintln(p.Stdout, "Started...")
+		fmt.Fprintln(p.Stdout, "Restarted...")
 	}
+}
+
+func Signal(cmd *exec.Cmd, s syscall.Signal, cancel context.CancelFunc) error {
+	group, err := os.FindProcess(-cmd.Process.Pid)
+	if err != nil {
+		return err
+	}
+
+	if err := group.Signal(s); err != nil {
+		return err
+	}
+
+	cancel()
+
+	return nil
 }
