@@ -2,73 +2,76 @@ package rebuilder
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/pflag"
 )
 
-// runs the file watcher and notifies the manager when a change
-// is detected through the changed channel.
-func runWatcher(changed chan bool) {
-	// Create new watcher.
-	watcher, err := buildWatcher()
+var watchExtensions string
+
+func init() {
+	pflag.StringVar(&watchExtensions, "watch.extensions", ".go,.css,.js", "comma separated extensions to watch for recompile")
+}
+
+type Watcher interface {
+	Watch(reload []chan bool)
+}
+
+type watcher struct{}
+
+func (w *watcher) Watch(reloadCh []chan bool) {
+	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "error creating watcher: %v\n", err)
+		return
 	}
 	defer watcher.Close()
 
-	// Start listening for events.
-	go func() {
-		for {
-			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					return
-				}
-
-				if !config.isWatchedExtension(filepath.Ext(event.Name)) {
-					continue
-				}
-
-				if event.Has(fsnotify.Write) || event.Has(fsnotify.Create) ||
-					event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
-					changed <- true
-				}
-			case err, ok := <-watcher.Errors:
-				if !ok {
-					return
-				}
-				log.Println("error:", err)
-			}
-		}
-	}()
-
-	// Block main goroutine forever.
-	<-make(chan struct{})
-}
-
-func buildWatcher() (*fsnotify.Watcher, error) {
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		return watcher, fmt.Errorf("error creating watcher: %w", err)
-	}
-
-	// Add all files that need to be watched to the
-	// watcher so it notifies the errors that it needs to
-	// restart.
 	err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() || config.isExcludedPath(path) {
-			return nil
+		if err != nil {
+			return err
 		}
-
-		return watcher.AddWith(path)
+		if info.IsDir() {
+			return watcher.Add(path)
+		}
+		return nil
 	})
 
 	if err != nil {
-		return watcher, fmt.Errorf("error loading paths: %w", err)
+		fmt.Fprintf(os.Stderr, "error loading paths: %v\n", err)
+		return
 	}
 
-	return watcher, err
+	for {
+		select {
+		case event, ok := <-watcher.Events:
+			if !ok {
+				return
+			}
+
+			if !slices.Contains(strings.Split(watchExtensions, ","), filepath.Ext(event.Name)) {
+				continue
+			}
+
+			if event.Has(fsnotify.Write) || event.Has(fsnotify.Create) ||
+				event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
+				for _, ch := range reloadCh {
+					select {
+					case ch <- true:
+					default:
+					}
+				}
+			}
+
+		case err, ok := <-watcher.Errors:
+			if !ok {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		}
+	}
 }
