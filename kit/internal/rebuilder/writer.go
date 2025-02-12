@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -22,12 +23,16 @@ var colors = []string{
 const endColor = "\033[0m"
 
 type customWriter struct {
+	mu     sync.Mutex
 	writer io.Writer
 	prefix string
 	color  string
 }
 
 func (cw *customWriter) Write(p []byte) (int, error) {
+	cw.mu.Lock()
+	defer cw.mu.Unlock()
+
 	timestamp := time.Now().Format(time.DateTime)
 	trailingSpaces := strings.Repeat(" ", maxServiceNameLen-len(cw.prefix))
 

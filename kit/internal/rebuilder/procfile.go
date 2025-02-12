@@ -47,6 +47,8 @@ func readProcfile() ([]entry, error) {
 
 	var sorted []entry
 	for _, e := range entries {
+		maxServiceNameLen = max(maxServiceNameLen, len(e.Name))
+
 		if e.Name == "app" {
 			sorted = append([]entry{e}, sorted...)
 			continue

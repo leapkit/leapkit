@@ -2,13 +2,23 @@ package rebuilder
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 	"time"
 )
+
+func newProcess(e entry) *process {
+	return &process{
+		entry:  e,
+		Stdout: wrap(os.Stdout, e),
+		Stderr: wrap(os.Stderr, e),
+	}
+}
 
 type process struct {
 	entry
@@ -16,62 +26,55 @@ type process struct {
 	Stderr io.Writer
 }
 
-func (p *process) Run(reloadSignal chan bool) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Fprintf(p.Stderr, "error running process: %v\n", r)
-		}
-	}()
-
-	var mainCmd string
-	var args []string
-
+func (p *process) Run(ctx context.Context, reloadSignal chan bool) error {
 	fields := strings.Fields(p.Command)
-	if len(fields) > 0 {
-		mainCmd = fields[0]
-		args = fields[1:]
+	if len(fields) == 0 {
+		fmt.Fprintln(p.Stderr, "error: command is empty")
+		return errors.New("command is empty")
 	}
 
+	mainCmd, args := fields[0], fields[1:]
+
 	for {
-		ctx, cancel := context.WithCancel(context.Background())
-		cmd := exec.CommandContext(ctx, mainCmd, args...)
+		pCtx, cancel := context.WithCancel(context.Background())
+		cmd := exec.CommandContext(pCtx, mainCmd, args...)
+
 		cmd.Stdout = p.Stdout
 		cmd.Stderr = p.Stderr
+		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
-		errChan := make(chan error, 1)
+		if err := cmd.Start(); err != nil {
+			fmt.Fprintf(p.Stderr, "failed to start process: %v\n", err)
+			cancel()
+			return err
+		}
 
+		errCh := make(chan error, 1)
 		go func() {
-			errChan <- cmd.Run()
+			if err := cmd.Wait(); err != nil {
+				errCh <- err
+			}
 		}()
 
 		select {
 		case <-reloadSignal:
-			fmt.Fprintln(p.Stdout, "Restarting process...")
-
-			if cmd.Process != nil {
-				cmd.Process.Kill()
-			}
-
+			fmt.Fprintln(p.Stdout, "Reloading...")
+			syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM)
 			cancel()
-			<-errChan
-
-			time.Sleep(200 * time.Millisecond)
-
-		case err := <-errChan:
+		case <-ctx.Done():
+			fmt.Fprintln(p.Stdout, "Stopping...")
+			syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM)
+			cancel()
+			return nil
+		case err := <-errCh:
 			if err != nil {
 				fmt.Fprintf(p.Stderr, "process exited with error: %v\n", err)
+				cancel()
+				return err
 			}
-
-			cancel()
-			return
 		}
-	}
-}
 
-func newProcess(e entry) *process {
-	return &process{
-		entry:  e,
-		Stdout: wrap(os.Stdout, e),
-		Stderr: wrap(os.Stderr, e),
+		time.Sleep(200 * time.Millisecond)
+		fmt.Fprintln(p.Stdout, "Started...")
 	}
 }

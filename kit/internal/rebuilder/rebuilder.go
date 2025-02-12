@@ -1,10 +1,11 @@
 package rebuilder
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
+	"syscall"
 )
 
 func Serve() error {
@@ -14,31 +15,27 @@ func Serve() error {
 	}
 
 	fmt.Println("[kit] Starting app")
-	for _, entry := range entries {
-		maxServiceNameLen = max(maxServiceNameLen, len(entry.Name))
-	}
 
-	fmt.Printf("\nName%s | Command\n", strings.Repeat(" ", maxServiceNameLen-len("Name")))
-	for _, entry := range entries {
-		fmt.Printf("%s%s | %s\n", entry.Name, strings.Repeat(" ", maxServiceNameLen-len(entry.Name)), entry.Command)
-	}
-
-	fmt.Println()
-
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
 	reload := make(chan bool)
+	exitCh := make(chan error, len(entries))
 
 	go watcher().Watch(reload)
 	for _, e := range entries {
-		go newProcess(e).Run(reload)
+		go func() {
+			exitCh <- newProcess(e).Run(ctx, reload)
+		}()
 	}
 
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt)
+	<-ctx.Done()
+	fmt.Println()
 
-	<-signalChan
-	close(reload)
+	for i := 0; i < len(entries); i++ {
+		<-exitCh
+	}
 
-	fmt.Println("\n[kit] Shutting down...")
+	fmt.Println("[kit] Shutting down...")
 
 	return nil
 }
