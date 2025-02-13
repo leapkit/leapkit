@@ -8,15 +8,15 @@ import (
 	"syscall"
 )
 
-func Serve() error {
-	entries, err := readProcfile()
+func Serve(ctx context.Context) error {
+	entries, err := readProcfile("Procfile")
 	if err != nil {
 		return err
 	}
 
 	fmt.Println("[kit] Starting app")
 
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
 	reloadCh := make([]chan bool, len(entries))
@@ -31,9 +31,8 @@ func Serve() error {
 	}
 
 	<-ctx.Done()
-	fmt.Println()
 
-	for i := 0; i < len(entries); i++ {
+	for range entries {
 		<-exitCh
 	}
 

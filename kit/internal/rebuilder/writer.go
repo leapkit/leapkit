@@ -38,6 +38,10 @@ func (cw *customWriter) Write(p []byte) (int, error) {
 
 	scanner := bufio.NewScanner(bytes.NewReader(p))
 	for scanner.Scan() {
+		if strings.TrimSpace(scanner.Text()) == "" {
+			continue
+		}
+
 		line := fmt.Sprintf("%s%s %s%s |%s", cw.color, timestamp, cw.prefix, trailingSpaces, endColor)
 		line += " " + strings.TrimSuffix(scanner.Text(), "\n") + "\n"
 

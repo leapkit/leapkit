@@ -34,6 +34,8 @@ func (p *process) Run(ctx context.Context, reload chan bool) error {
 
 	mainCmd, args := fields[0], fields[1:]
 
+	var restarted bool
+
 	for {
 		pCtx, cancel := context.WithCancel(context.Background())
 		cmd := exec.CommandContext(pCtx, mainCmd, args...)
@@ -42,13 +44,15 @@ func (p *process) Run(ctx context.Context, reload chan bool) error {
 		cmd.Stderr = p.Stderr
 		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
+		if restarted {
+			fmt.Fprintln(p.Stdout, "Restarted...")
+		}
+
 		if err := cmd.Start(); err != nil {
 			fmt.Fprintf(p.Stderr, "failed to start process: %v\n", err)
 			cancel()
 			return err
 		}
-
-		fmt.Fprintln(p.Stdout, "Started... (pid:", cmd.Process.Pid, ")")
 
 		errCh := make(chan error, 1)
 		go func() {
@@ -59,14 +63,13 @@ func (p *process) Run(ctx context.Context, reload chan bool) error {
 
 		select {
 		case <-reload:
-			fmt.Fprintln(p.Stdout, "Reloading...")
 			if err := Signal(cmd, syscall.SIGTERM, cancel); err != nil {
-				fmt.Fprintf(p.Stderr, "error sending SIGTERM: %v\n", err)
+				fmt.Fprintf(p.Stderr, "error restarting process: %v\n", err)
 			}
 		case <-ctx.Done():
 			fmt.Fprintln(p.Stdout, "Stopping...")
 			if err := Signal(cmd, syscall.SIGTERM, cancel); err != nil {
-				fmt.Fprintf(p.Stderr, "error sending SIGTERM: %v\n", err)
+				fmt.Fprintf(p.Stderr, "error stopping process: %v\n", err)
 			}
 
 			return nil
@@ -76,7 +79,7 @@ func (p *process) Run(ctx context.Context, reload chan bool) error {
 			return err
 		}
 
-		fmt.Fprintln(p.Stdout, "Restarted...")
+		restarted = true
 	}
 }
 
