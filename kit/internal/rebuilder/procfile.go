@@ -14,8 +14,8 @@ type entry struct {
 	Command string
 }
 
-func readProcfile() ([]entry, error) {
-	f, err := os.Open("Procfile")
+func readProcfile(path string) ([]entry, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
@@ -39,9 +39,9 @@ func readProcfile() ([]entry, error) {
 		}
 
 		entries = append(entries, entry{
-			ID:      len(entries) + 1,
-			Name:    parts[0],
-			Command: parts[1],
+			ID:      len(entries),
+			Name:    strings.TrimSpace(parts[0]),
+			Command: strings.TrimSpace(parts[1]),
 		})
 	}
 
@@ -49,21 +49,5 @@ func readProcfile() ([]entry, error) {
 		return nil, fmt.Errorf("error reading Procfile: %w", err)
 	}
 
-	slices.SortFunc(entries, func(a, b entry) int {
-		return strings.Compare(a.Name, b.Name)
-	})
-
-	var sorted []entry
-	for _, e := range entries {
-		maxServiceNameLen = max(maxServiceNameLen, len(e.Name))
-
-		if e.Name == "app" {
-			sorted = append([]entry{e}, sorted...)
-			continue
-		}
-
-		sorted = append(sorted, e)
-	}
-
-	return sorted, nil
+	return entries, nil
 }
