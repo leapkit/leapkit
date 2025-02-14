@@ -1,0 +1,116 @@
+package database
+
+import (
+	"cmp"
+	"database/sql"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/leapkit/leapkit/core/db"
+	flag "github.com/spf13/pflag"
+
+	// Loading .env file
+	_ "github.com/leapkit/leapkit/core/tools/envload"
+
+	// Postgres driver
+	_ "github.com/lib/pq"
+
+	// Sqlite3 driver
+	_ "github.com/mattn/go-sqlite3"
+)
+
+var (
+	// migrationsFolder is the folder where the migrations are stored
+	migrationsFolder string
+)
+
+func init() {
+	flag.StringVar(&migrationsFolder, "migrations.folder", filepath.Join("internal", "migrations"), "the folder where the migrations are stored")
+}
+
+// Exec provides operations to manage the database
+// during development. It can create, drop and run migrations.
+func Exec() error {
+	flag.Parse()
+
+	args := os.Args
+
+	if len(args) < 2 {
+		fmt.Println("Usage: database <command>")
+
+		return nil
+	}
+
+	url := cmp.Or(os.Getenv("DATABASE_URL"), "database.db?_timeout=5000&_sync=1")
+
+	switch args[1] {
+	case "migrate":
+		driver := "sqlite3"
+		if strings.HasPrefix(url, "postgres") {
+			driver = "postgres"
+		}
+
+		conn, err := sql.Open(driver, url)
+		if err != nil {
+			return fmt.Errorf("error opening connection: %w", err)
+		}
+
+		err = db.RunMigrationsDir(migrationsFolder, conn)
+		if err != nil {
+			return fmt.Errorf("error running migrations: %w", err)
+		}
+
+		fmt.Println("✅ Migrations ran successfully")
+	case "create":
+		err := db.Create(url)
+		if err != nil {
+			return fmt.Errorf("error creating database: %w", err)
+		}
+
+		fmt.Println("✅ Database created successfully")
+
+	case "drop":
+		err := db.Drop(url)
+		if err != nil {
+			return fmt.Errorf("error dropping database: %w", err)
+		}
+
+		fmt.Println("✅ Database dropped successfully")
+
+	case "reset":
+		err := db.Drop(url)
+		if err != nil {
+			return fmt.Errorf("error dropping database: %w", err)
+		}
+
+		err = db.Create(url)
+		if err != nil {
+			return fmt.Errorf("error creating database: %w", err)
+		}
+
+		driver := "sqlite3"
+		if strings.HasPrefix(url, "postgres") {
+			driver = "postgres"
+		}
+
+		conn, err := sql.Open(driver, url)
+		if err != nil {
+			return fmt.Errorf("error opening connection: %w", err)
+		}
+
+		err = db.RunMigrationsDir(migrationsFolder, conn)
+		if err != nil {
+			return fmt.Errorf("error running migrations: %w", err)
+		}
+
+		fmt.Println("✅ Database reset successfully")
+	default:
+		fmt.Println("command not found")
+
+		return nil
+	}
+
+	return nil
+}
