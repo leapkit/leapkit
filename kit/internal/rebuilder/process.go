@@ -2,7 +2,6 @@ package rebuilder
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -25,20 +24,17 @@ type process struct {
 	Stderr io.Writer
 }
 
-func (p *process) Run(ctx context.Context, reload chan bool) error {
+func (p *process) Run(parentCtx context.Context, reload chan bool) error {
 	fields := strings.Fields(p.Command)
-	if len(fields) == 0 {
-		fmt.Fprintln(p.Stderr, "error: command is empty")
-		return errors.New("command is empty")
-	}
-
-	mainCmd, args := fields[0], fields[1:]
+	name, args := fields[0], fields[1:]
 
 	var restarted bool
 
 	for {
-		pCtx, cancel := context.WithCancel(context.Background())
-		cmd := exec.CommandContext(pCtx, mainCmd, args...)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		cmd := exec.CommandContext(ctx, name, args...)
 
 		cmd.Stdout = p.Stdout
 		cmd.Stderr = p.Stderr
@@ -50,7 +46,6 @@ func (p *process) Run(ctx context.Context, reload chan bool) error {
 
 		if err := cmd.Start(); err != nil {
 			fmt.Fprintf(p.Stderr, "failed to start process: %v\n", err)
-			cancel()
 			return err
 		}
 
@@ -63,37 +58,35 @@ func (p *process) Run(ctx context.Context, reload chan bool) error {
 
 		select {
 		case <-reload:
-			if err := Signal(cmd, syscall.SIGTERM, cancel); err != nil {
-				fmt.Fprintf(p.Stderr, "error restarting process: %v\n", err)
+			if err := Signal(cmd, syscall.SIGTERM); err != nil {
+				fmt.Fprintf(p.Stdout, "error restarting process: %v\n", err)
 			}
-		case <-ctx.Done():
+		case <-parentCtx.Done():
 			fmt.Fprintln(p.Stdout, "Stopping...")
-			if err := Signal(cmd, syscall.SIGTERM, cancel); err != nil {
-				fmt.Fprintf(p.Stderr, "error stopping process: %v\n", err)
+			if err := Signal(cmd, syscall.SIGTERM); err != nil {
+				fmt.Fprintf(p.Stdout, "error stopping process: %v\n", err)
 			}
 
 			return nil
 		case err := <-errCh:
 			fmt.Fprintf(p.Stderr, "process exited with error: %v\n", err)
-			cancel()
-			return err
+
+			select {
+			case <-reload:
+			case <-parentCtx.Done():
+				return nil
+			}
 		}
 
 		restarted = true
 	}
 }
 
-func Signal(cmd *exec.Cmd, s syscall.Signal, cancel context.CancelFunc) error {
+func Signal(cmd *exec.Cmd, s syscall.Signal) error {
 	group, err := os.FindProcess(-cmd.Process.Pid)
 	if err != nil {
 		return err
 	}
 
-	if err := group.Signal(s); err != nil {
-		return err
-	}
-
-	cancel()
-
-	return nil
+	return group.Signal(s)
 }
