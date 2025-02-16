@@ -15,9 +15,6 @@ func main() {
 		fmt.Println("Usage: kit <command>")
 		fmt.Println("Available commands:")
 		fmt.Println("  - new [name]")
-		fmt.Println("  - database [command]")
-		fmt.Println("  - generate [generator]")
-		fmt.Println("  - serve [command]")
 		fmt.Println("  - version [command]")
 		fmt.Println("  - update")
 		fmt.Println("")
@@ -32,12 +29,6 @@ func main() {
 	switch os.Args[1] {
 	case "new":
 		newmodule(os.Args[1:])
-	case "serve", "s", "dev":
-		serve(os.Args[1:])
-	case "database", "db":
-		err = database(os.Args[1:])
-	case "generate", "gen", "g":
-		err = generateWith(os.Args[1:])
 	case "update":
 		err = update()
 	case "version", "v":
