@@ -74,13 +74,13 @@ func Exec() error {
 
 		fmt.Println("✅ Database reset successfully")
 
-	case "new":
-		if args[2] != "migration" {
-			fmt.Println("Usage: database new migration <migration_name>")
+	case "generate_migration":
+		if len(args) < 3 {
+			fmt.Println("Usage: database generate_migration <migration_name>")
 			return nil
 		}
 
-		err := newMigration(url)
+		err := newMigration(args[2])
 		if err != nil {
 			return err
 		}
