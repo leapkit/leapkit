@@ -1,6 +1,6 @@
 module github.com/leapkit/leapkit/cli/dev
 
-go 1.24.0
+go 1.22
 
 require (
 	github.com/fsnotify/fsnotify v1.8.0

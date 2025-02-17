@@ -1,15 +1,17 @@
-package migration
+package database
 
 import (
+	"database/sql"
 	_ "embed"
 	"flag"
 	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
-	"github.com/spf13/pflag"
+	"github.com/leapkit/leapkit/core/db"
 )
 
 var (
@@ -23,34 +25,6 @@ var (
 
 func init() {
 	flag.StringVar(&migrationFolder, "migration.folder", filepath.Join("internal", "migrations"), "the folder where the migrations are stored")
-}
-
-func Migration() error {
-	pflag.Parse()
-
-	if f := pflag.Lookup("migration.folder"); f != nil {
-		migrationFolder = f.Value.String()
-	}
-
-	args := os.Args
-
-	if len(args) < 3 {
-		fmt.Println("Usage: migration <command>")
-
-		return nil
-	}
-
-	switch args[1] {
-	case "new":
-		err := newMigration(args[2])
-		if err != nil {
-			return fmt.Errorf("error creating migration: %w", err)
-		}
-	default:
-		fmt.Println("command not found")
-	}
-
-	return nil
 }
 
 // newMigration generator function
@@ -89,5 +63,24 @@ func newMigration(name string) error {
 	}
 
 	fmt.Printf("✅ Migration file `%v` generated\n", name)
+	return nil
+}
+
+func runMigrations(url string) error {
+	driver := "sqlite3"
+	if strings.HasPrefix(url, "postgres") {
+		driver = "postgres"
+	}
+
+	conn, err := sql.Open(driver, url)
+	if err != nil {
+		return fmt.Errorf("error opening connection: %w", err)
+	}
+
+	err = db.RunMigrationsDir(migrationFolder, conn)
+	if err != nil {
+		return fmt.Errorf("error running migrations: %w", err)
+	}
+
 	return nil
 }

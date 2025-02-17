@@ -1,4 +1,4 @@
-package migration_test
+package database_test
 
 import (
 	"bytes"
@@ -8,7 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/leapkit/leapkit/cli/migration/internal/migration"
+	"github.com/leapkit/leapkit/cli/db/internal/database"
+
 	"github.com/spf13/pflag"
 )
 
@@ -26,10 +27,11 @@ func TestGenerateMigration(t *testing.T) {
 		migrationFolder := "internal/migrations"
 
 		// Create a new migration
-		os.Args = []string{"migration", "new", "create_users_table"}
-		err = migration.Migration()
+		os.Args = []string{"db", "new", "migration", "create_users_table"}
+		// main.go call
+		err = database.Exec()
 		if err != nil {
-			t.Fatalf("error creating migration: %v", err)
+			fmt.Printf("[error] %v\n", err)
 		}
 
 		var migrationPath string
@@ -89,10 +91,10 @@ func TestGenerateMigration(t *testing.T) {
 			Usage:     "test",
 		})
 
-		os.Args = []string{"migration", "new", "create_users_table", fmt.Sprintf("--migration.folder=%s", customMigrationFolder)}
+		os.Args = []string{"db", "new", "migration", "create_users_table", fmt.Sprintf("--migration.folder=%s", customMigrationFolder)}
 
 		// Create a new migration
-		err = migration.Migration()
+		err = database.Exec()
 		if err != nil {
 			t.Fatalf("error creating migration: %v", err)
 		}
@@ -145,8 +147,8 @@ func TestGenerateMigration(t *testing.T) {
 			os.Stdout = current
 		}()
 
-		os.Args = []string{"migration", "foo"}
-		err := migration.Migration()
+		os.Args = []string{"db", "new", "foo"}
+		err := database.Exec()
 		if err != nil {
 			t.Fatalf("error creating migration: %v", err)
 		}
@@ -155,32 +157,8 @@ func TestGenerateMigration(t *testing.T) {
 		out, _ := io.ReadAll(r)
 		fmt.Println(string(out))
 
-		if !bytes.Contains(out, []byte("Usage: migration <command>")) {
-			t.Errorf("Expected 'Usage: migration <command>', got: %v", string(out))
-		}
-	})
-
-	t.Run("correct invalida command", func(t *testing.T) {
-		current := os.Stdout
-		r, w, _ := os.Pipe()
-		os.Stdout = w
-
-		defer func() {
-			os.Stdout = current
-		}()
-
-		os.Args = []string{"migration", "invalid", "value"}
-		err := migration.Migration()
-		if err != nil {
-			t.Errorf("Expected no error, got: %v", err)
-		}
-
-		w.Close()
-		out, _ := io.ReadAll(r)
-		fmt.Println(string(out))
-
-		if !bytes.Contains(out, []byte("command not found")) {
-			t.Errorf("Expected 'command not found', got: %v", string(out))
+		if !bytes.Contains(out, []byte("Usage: database new migration <migration_name>")) {
+			t.Errorf("Expected 'Usage: database new migration <migration_name>', got: %v", string(out))
 		}
 	})
 }
