@@ -80,6 +80,58 @@ func TestServe(t *testing.T) {
 		}
 	})
 
+	t.Run("Correct - Watching added and removed files or folders within sub path", func(t *testing.T) {
+		stdout := os.Stdout
+		stderr := os.Stderr
+
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+		os.Stderr = w
+
+		t.Cleanup(func() {
+			os.Stdout = stdout
+			os.Stderr = stderr
+		})
+
+		procfile()
+		err := os.WriteFile("Procfile", []byte("web : echo 'Hello, world!'"), 0644)
+		if err != nil {
+			t.Fatalf("Failed to write Procfile: %v", err)
+		}
+
+		os.MkdirAll("test/sub/folder/path", 0755)
+		os.Create("test/sub/folder/path/main.go")
+
+		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+		defer cancel()
+
+		go func() {
+			time.Sleep(20 * time.Millisecond)
+			os.RemoveAll("test")
+		}()
+
+		if err := rebuilder.Serve(ctx); err != nil {
+			t.Errorf("Serve() returned an error: %v", err)
+		}
+
+		w.Close()
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+
+		if !strings.Contains(buf.String(), "[kit] Starting app") {
+			t.Errorf("Expected '[kit] Starting app' to be in the output, got '%v'", buf.String())
+		}
+
+		if !strings.Contains(buf.String(), "Restarted...") {
+			t.Errorf("Expected 'Restarted...' to be in the output, got '%v'", buf.String())
+		}
+
+		if !strings.Contains(buf.String(), "[kit] Shutting down...") {
+			t.Errorf("Expected '[kit] Shutting down...' to be in the output, got '%v'", buf.String())
+		}
+
+	})
+
 	t.Run("Correct - Skip invalid commands in Procfile", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 		defer cancel()
