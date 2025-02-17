@@ -26,7 +26,7 @@ jobs:
         working-directory: ./core
         run: |
           go test --cover ./... -v
-      - name: test kit
-        working-directory: ./kit
+      - name: test cli
+        working-directory: ./cli
         run: |
           go test --cover ./... -v
