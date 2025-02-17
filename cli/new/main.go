@@ -1,3 +1,6 @@
+// This package creates a new leapkit module using the gonew tool
+// and the leapkit/template template. It passes the name
+// of the module as an argument to the gonew tool.
 package main
 
 import (
@@ -6,13 +9,8 @@ import (
 	"os/exec"
 )
 
-// newmodule creates a new module using the gonew tool
-// and the leapkit/template template. It passes the name
-// of the module as an argument to the gonew tool.
-//
-// Info: This function is not named  "new" because thats a reserved
-// keyword in Go.
-func newmodule(args []string) {
+func main() {
+	args := os.Args
 	if len(args) < 2 {
 		fmt.Println("Usage: new [name]")
 		return
