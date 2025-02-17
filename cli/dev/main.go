@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/leapkit/leapkit/kit/internal/rebuilder"
+	"github.com/leapkit/leapkit/cli/dev/internal/rebuilder"
 )
 
-func serve(_ []string) error {
+func main() {
 	err := rebuilder.Serve(context.Background())
 	if err != nil {
 		fmt.Println("[error] starting the server:", err)
 	}
-
-	return err
 }

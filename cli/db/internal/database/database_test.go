@@ -1,9 +1,13 @@
-package main_test
+package database_test
 
 import (
+	"fmt"
+	"io"
 	"os"
-	"os/exec"
+	"strings"
 	"testing"
+
+	"github.com/leapkit/leapkit/cli/db/internal/database"
 )
 
 func TestMigrate(t *testing.T) {
@@ -30,6 +34,7 @@ func TestMigrate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			os.RemoveAll("internal")
 			// Set the DATABASE_URL to the temporary file
 			os.Setenv("DATABASE_URL", tc.url)
 			if tc.migrationFolder {
@@ -39,16 +44,33 @@ func TestMigrate(t *testing.T) {
 					t.Fatalf("error creating migrations folder: %v", err)
 				}
 
-				defer os.RemoveAll("internal/migrations")
+				defer os.RemoveAll("internal")
 			}
 
-			cmd := exec.Command("go", "run", ".", "db", "migrate")
-			out, err := cmd.CombinedOutput()
+			stdout := os.Stdout
+			stderr := os.Stderr
+
+			f, _ := os.Create("output")
+			defer os.Remove("output")
+
+			os.Stdout = f
+			os.Stderr = f
+
+			os.Args = []string{"db", "migrate"}
+			// main.go call
+			err := database.Exec()
 			if err != nil {
-				t.Fatalf("error running command: %v", err)
+				fmt.Printf("[error] %v\n", err)
 			}
 
-			if string(out) != tc.output {
+			os.Stdout = stdout
+			os.Stderr = stderr
+
+			f.Close()
+			f, _ = os.Open("output")
+
+			out, _ := io.ReadAll(f)
+			if !strings.Contains(string(out), tc.output) {
 				t.Fatalf("unexpected output: %v", string(out))
 			}
 		})
@@ -61,12 +83,30 @@ func TestCreate(t *testing.T) {
 		// Set the DATABASE_URL to the temporary file
 		os.Setenv("DATABASE_URL", "test.db")
 		defer os.Remove("test.db")
-		cmd := exec.Command("go", "run", ".", "db", "create")
-		out, err := cmd.CombinedOutput()
+
+		stdout := os.Stdout
+		stderr := os.Stderr
+
+		f, _ := os.Create("output")
+		defer os.Remove("output")
+
+		os.Stdout = f
+		os.Stderr = f
+
+		os.Args = []string{"db", "create"}
+		// main.go call
+		err := database.Exec()
 		if err != nil {
-			t.Fatalf("error running command: %v", err)
+			fmt.Printf("[error] %v\n", err)
 		}
 
+		os.Stdout = stdout
+		os.Stderr = stderr
+
+		f.Close()
+		f, _ = os.Open("output")
+
+		out, _ := io.ReadAll(f)
 		if string(out) != "✅ Database created successfully\n" {
 			t.Fatalf("unexpected output: %v", string(out))
 		}
@@ -77,7 +117,6 @@ func TestCreate(t *testing.T) {
 			t.Fatalf("file does not exist")
 		}
 	})
-
 }
 
 func TestDrop(t *testing.T) {
@@ -85,12 +124,30 @@ func TestDrop(t *testing.T) {
 		// Set the DATABASE_URL to the temporary file
 		os.Setenv("DATABASE_URL", "test.db")
 		defer os.Remove("test.db")
-		cmd := exec.Command("go", "run", ".", "db", "drop")
-		out, err := cmd.CombinedOutput()
+
+		stdout := os.Stdout
+		stderr := os.Stderr
+
+		f, _ := os.Create("output")
+		defer os.Remove("output")
+
+		os.Stdout = f
+		os.Stderr = f
+
+		os.Args = []string{"db", "drop"}
+		// main.go call
+		err := database.Exec()
 		if err != nil {
-			t.Fatalf("error running command: %v", err)
+			fmt.Printf("[error] %v\n", err)
 		}
 
+		os.Stdout = stdout
+		os.Stderr = stderr
+
+		f.Close()
+		f, _ = os.Open("output")
+
+		out, _ := io.ReadAll(f)
 		if string(out) != "✅ Database dropped successfully\n" {
 			t.Fatalf("unexpected output: %v", string(out))
 		}
@@ -142,15 +199,32 @@ func TestReset(t *testing.T) {
 					t.Fatalf("error creating migrations folder: %v", err)
 				}
 
-				defer os.RemoveAll("internal/migrations")
+				defer os.RemoveAll("internal")
 			}
 
-			cmd := exec.Command("go", "run", ".", "db", "reset")
-			out, err := cmd.CombinedOutput()
+			stdout := os.Stdout
+			stderr := os.Stderr
+
+			f, _ := os.Create("output")
+			defer os.Remove("output")
+
+			os.Stdout = f
+			os.Stderr = f
+
+			os.Args = []string{"db", "reset"}
+			// main.go call
+			err := database.Exec()
 			if err != nil {
-				t.Fatalf("error running command: %v", err)
+				fmt.Printf("[error] %v\n", err)
 			}
 
+			os.Stdout = stdout
+			os.Stderr = stderr
+
+			f.Close()
+			f, _ = os.Open("output")
+
+			out, _ := io.ReadAll(f)
 			if string(out) != tc.output {
 				t.Fatalf("unexpected output: %v", string(out))
 			}

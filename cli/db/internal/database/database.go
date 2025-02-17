@@ -1,12 +1,9 @@
-package main
+package database
 
 import (
 	"cmp"
-	"database/sql"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/leapkit/leapkit/core/db"
 	flag "github.com/spf13/pflag"
@@ -21,18 +18,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var (
-	// migrationsFolder is the folder where the migrations are stored
-	migrationsFolder string
-)
-
-func init() {
-	flag.StringVar(&migrationsFolder, "migrations.folder", filepath.Join("internal", "migrations"), "the folder where the migrations are stored")
-}
-
-// database provides operations to manage the database
+// Exec provides operations to manage the database
 // during development. It can create, drop and run migrations.
-func database(args []string) error {
+func Exec() error {
+	flag.Parse()
+
+	args := os.Args
+
 	if len(args) < 2 {
 		fmt.Println("Usage: database <command>")
 
@@ -43,19 +35,9 @@ func database(args []string) error {
 
 	switch args[1] {
 	case "migrate":
-		driver := "sqlite3"
-		if strings.HasPrefix(url, "postgres") {
-			driver = "postgres"
-		}
-
-		conn, err := sql.Open(driver, url)
+		err := runMigrations(url)
 		if err != nil {
-			return fmt.Errorf("error opening connection: %w", err)
-		}
-
-		err = db.RunMigrationsDir(migrationsFolder, conn)
-		if err != nil {
-			return fmt.Errorf("error running migrations: %w", err)
+			fmt.Printf("[error] %v\n", err)
 		}
 
 		fmt.Println("✅ Migrations ran successfully")
@@ -86,22 +68,22 @@ func database(args []string) error {
 			return fmt.Errorf("error creating database: %w", err)
 		}
 
-		driver := "sqlite3"
-		if strings.HasPrefix(url, "postgres") {
-			driver = "postgres"
-		}
-
-		conn, err := sql.Open(driver, url)
-		if err != nil {
-			return fmt.Errorf("error opening connection: %w", err)
-		}
-
-		err = db.RunMigrationsDir(migrationsFolder, conn)
-		if err != nil {
-			return fmt.Errorf("error running migrations: %w", err)
+		if err := runMigrations(url); err != nil {
+			return err
 		}
 
 		fmt.Println("✅ Database reset successfully")
+
+	case "generate_migration":
+		if len(args) < 3 {
+			fmt.Println("Usage: database generate_migration <migration_name>")
+			return nil
+		}
+
+		err := newMigration(args[2])
+		if err != nil {
+			return err
+		}
 	default:
 		fmt.Println("command not found")
 

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/leapkit/leapkit/kit/internal/rebuilder"
+	"github.com/leapkit/leapkit/cli/dev/internal/rebuilder"
 )
 
 func TestServe(t *testing.T) {

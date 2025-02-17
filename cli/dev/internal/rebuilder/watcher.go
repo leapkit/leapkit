@@ -25,6 +25,8 @@ type Watcher interface {
 type watcher struct{}
 
 func (w *watcher) Watch(reloadCh []chan bool) {
+	pflag.Parse()
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error creating watcher: %v\n", err)

@@ -1,6 +1,8 @@
 go 1.22
 
 use (
+	./cli/db
+	./cli/dev
 	./core
 	./kit
 	./template
