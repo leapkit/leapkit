@@ -26,7 +26,11 @@ jobs:
         working-directory: ./core
         run: |
           go test --cover ./... -v
-      - name: test kit
-        working-directory: ./kit
+      - name: test cli db
+        working-directory: ./cli/db/internal/database
+        run: |
+          go test --cover ./... -v
+      - name: test cli dev
+        working-directory: ./cli/dev/internal/rebuilder
         run: |
           go test --cover ./... -v

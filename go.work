@@ -3,7 +3,7 @@ go 1.22
 use (
 	./cli/db
 	./cli/dev
+	./cli/new
 	./core
-	./kit
 	./template
 )
