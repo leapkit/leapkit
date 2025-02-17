@@ -34,17 +34,19 @@ func (w *watcher) Watch(reloadCh []chan bool) {
 	}
 	defer watcher.Close()
 
-	err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			return watcher.Add(path)
-		}
-		return nil
-	})
+	watchPath := func(path string) error {
+		return filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return watcher.Add(p)
+			}
+			return nil
+		})
+	}
 
-	if err != nil {
+	if err := watchPath("."); err != nil {
 		fmt.Fprintf(os.Stderr, "error loading paths: %v\n", err)
 		return
 	}
@@ -57,6 +59,23 @@ func (w *watcher) Watch(reloadCh []chan bool) {
 		case event, ok := <-watcher.Events:
 			if !ok {
 				return
+			}
+
+			if event.Has(fsnotify.Create) {
+				if info, err := os.Stat(event.Name); err == nil && info.IsDir() {
+					if err := watchPath(event.Name); err != nil {
+						fmt.Fprintf(os.Stderr, "error loading paths: %v\n", err)
+						return
+					}
+				}
+			}
+
+			if event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
+				if info, err := os.Stat(event.Name); os.IsNotExist(err) || (err == nil && info.IsDir()) {
+					_ = watcher.Remove(event.Name)
+
+					d.Trigger(reloadCh)
+				}
 			}
 
 			if !slices.Contains(strings.Split(watchExtensions, ","), filepath.Ext(event.Name)) {
