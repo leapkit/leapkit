@@ -15,7 +15,7 @@ import (
 var watchExtensions string
 
 func init() {
-	pflag.StringVar(&watchExtensions, "watch.extensions", ".go,.css,.js", "comma separated extensions to watch for recompile")
+	pflag.StringVar(&watchExtensions, "watch.extensions", ".go", "Comma-separated list of file extensions to watch for changes and trigger recompilation (e.g. .go,.css,.js).")
 }
 
 type Watcher interface {
