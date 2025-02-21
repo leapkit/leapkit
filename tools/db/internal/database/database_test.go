@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/leapkit/leapkit/cli/db/internal/database"
+	"github.com/leapkit/leapkit/tools/db/internal/database"
 )
 
 func TestMigrate(t *testing.T) {
@@ -39,7 +39,7 @@ func TestMigrate(t *testing.T) {
 			os.Setenv("DATABASE_URL", tc.url)
 			if tc.migrationFolder {
 				// Create temporary migrations folder in internal/migrations
-				err := os.MkdirAll("internal/migrations", 0755)
+				err := os.MkdirAll("internal/migrations", 0o755)
 				if err != nil {
 					t.Fatalf("error creating migrations folder: %v", err)
 				}
@@ -75,7 +75,6 @@ func TestMigrate(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestCreate(t *testing.T) {
@@ -157,20 +156,16 @@ func TestDrop(t *testing.T) {
 		if err == nil || !os.IsNotExist(err) {
 			t.Fatalf("file exists")
 		}
-
 	})
-
 }
 
 func TestReset(t *testing.T) {
-
 	testCases := []struct {
 		name            string
 		url             string
 		output          string
 		migrationFolder bool
 	}{
-
 		{
 			name:            "No migrations folder",
 			url:             "test.db",
@@ -194,7 +189,7 @@ func TestReset(t *testing.T) {
 
 			if tc.migrationFolder {
 				// Create temporary migrations folder in internal/migrations
-				err := os.MkdirAll("internal/migrations", 0755)
+				err := os.MkdirAll("internal/migrations", 0o755)
 				if err != nil {
 					t.Fatalf("error creating migrations folder: %v", err)
 				}
@@ -230,5 +225,4 @@ func TestReset(t *testing.T) {
 			}
 		})
 	}
-
 }

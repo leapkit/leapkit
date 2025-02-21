@@ -27,10 +27,6 @@ jobs:
         run: |
           go test --cover ./... -v
       - name: test cli db
-        working-directory: ./cli/db/internal/database
-        run: |
-          go test --cover ./... -v
-      - name: test cli dev
-        working-directory: ./cli/dev/internal/rebuilder
+        working-directory: ./tools
         run: |
           go test --cover ./... -v

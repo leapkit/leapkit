@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/leapkit/leapkit/cli/dev/internal/rebuilder"
+	"github.com/leapkit/leapkit/tools/dev/internal/rebuilder"
 )
 
 func main() {

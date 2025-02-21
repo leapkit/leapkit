@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/leapkit/leapkit/cli/db/internal/database"
+	"github.com/leapkit/leapkit/tools/db/internal/database"
 )
 
 func TestGenerateMigration(t *testing.T) {
