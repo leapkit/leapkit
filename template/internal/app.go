@@ -43,7 +43,8 @@ func New() Server {
 			cmp.Or(os.Getenv("SESSION_SECRET"), "d720c059-9664-4980-8169-1158e167ae57"),
 			cmp.Or(os.Getenv("SESSION_NAME"), "leapkit_session"),
 		),
-		server.WithAssets(assets.Files, "/"),
+
+		server.WithAssets(assets.Files, "/public/"),
 	)
 
 	r.Use(render.Middleware(
