@@ -1,9 +1,7 @@
-go 1.22
+go 1.24.0
 
 use (
-	./cli/db
-	./cli/dev
-	./cli/new
 	./core
 	./template
+	./tools
 )

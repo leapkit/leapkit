@@ -6,7 +6,7 @@ require (
 	github.com/go-playground/form/v4 v4.2.1
 	github.com/gobuffalo/plush/v5 v5.0.2
 	github.com/gorilla/sessions v1.3.0
-	github.com/mattn/go-sqlite3 v1.14.23
+	github.com/mattn/go-sqlite3 v1.14.24
 )
 
 require (

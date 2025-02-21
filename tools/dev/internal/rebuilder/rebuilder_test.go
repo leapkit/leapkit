@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/leapkit/leapkit/cli/dev/internal/rebuilder"
+	"github.com/leapkit/leapkit/tools/dev/internal/rebuilder"
 )
 
 func TestServe(t *testing.T) {
@@ -34,7 +34,7 @@ func TestServe(t *testing.T) {
 			os.RemoveAll("test")
 		}
 
-		os.Mkdir("test", 0755)
+		os.Mkdir("test", 0o755)
 		f, err := os.Create("test/main.go")
 		if err != nil {
 			t.Fatalf("Failed to create test/main.go: %v", err)
@@ -94,12 +94,12 @@ func TestServe(t *testing.T) {
 		})
 
 		procfile()
-		err := os.WriteFile("Procfile", []byte("web : echo 'Hello, world!'"), 0644)
+		err := os.WriteFile("Procfile", []byte("web : echo 'Hello, world!'"), 0o644)
 		if err != nil {
 			t.Fatalf("Failed to write Procfile: %v", err)
 		}
 
-		os.MkdirAll("test/sub/folder/path", 0755)
+		os.MkdirAll("test/sub/folder/path", 0o755)
 		os.Create("test/sub/folder/path/main.go")
 
 		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
@@ -129,14 +129,13 @@ func TestServe(t *testing.T) {
 		if !strings.Contains(buf.String(), "[kit] Shutting down...") {
 			t.Errorf("Expected '[kit] Shutting down...' to be in the output, got '%v'", buf.String())
 		}
-
 	})
 
 	t.Run("Correct - Skip invalid commands in Procfile", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 		defer cancel()
 
-		err := os.WriteFile("Procfile", []byte("web \napp : echo 'Hello, world!'"), 0644)
+		err := os.WriteFile("Procfile", []byte("web \napp : echo 'Hello, world!'"), 0o644)
 		if err != nil {
 			t.Fatalf("Failed to write Procfile: %v", err)
 		}
@@ -156,7 +155,7 @@ func TestServe(t *testing.T) {
 		})
 
 		procfile()
-		os.WriteFile("Procfile", []byte("web: echo 'Hello, world!'\nweb: echo 'duplicated!'"), 0644)
+		os.WriteFile("Procfile", []byte("web: echo 'Hello, world!'\nweb: echo 'duplicated!'"), 0o644)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 		defer cancel()
@@ -187,11 +186,11 @@ func TestServe(t *testing.T) {
 		})
 
 		procfile()
-		os.WriteFile("Procfile", []byte("app: go run test/main.go"), 0644)
+		os.WriteFile("Procfile", []byte("app: go run test/main.go"), 0o644)
 
 		testFile()
 		content := "package main\n\nimport \"fmt\"\n\nfunc main() {\n	fmt.Println(`Multiline\nlogs`)\n}"
-		os.WriteFile("test/main.go", []byte(content), 0644)
+		os.WriteFile("test/main.go", []byte(content), 0o644)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 		defer cancel()
@@ -222,7 +221,7 @@ func TestServe(t *testing.T) {
 		})
 
 		procfile()
-		os.WriteFile("Procfile", []byte("test: go run test/main.go"), 0644)
+		os.WriteFile("Procfile", []byte("test: go run test/main.go"), 0o644)
 
 		testFile()
 
@@ -232,7 +231,7 @@ func TestServe(t *testing.T) {
 		go func() {
 			time.Sleep(10 * time.Millisecond)
 			content := "package main\n\nimport \"fmt\"\n\nfunc main() {\n	fmt.Println(\"Updated!\")\n}"
-			os.WriteFile("test/main.go", []byte(content), 0644)
+			os.WriteFile("test/main.go", []byte(content), 0o644)
 		}()
 
 		if err := rebuilder.Serve(ctx); err != nil {
@@ -252,7 +251,7 @@ func TestServe(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 
 		procfile()
-		os.WriteFile("Procfile", []byte("test: go run test/main.go"), 0644)
+		os.WriteFile("Procfile", []byte("test: go run test/main.go"), 0o644)
 
 		testFile()
 
@@ -269,7 +268,7 @@ func TestServe(t *testing.T) {
 
 			for range 5 {
 				time.Sleep(10 * time.Millisecond)
-				os.WriteFile("test/main.go", []byte(content), 0644)
+				os.WriteFile("test/main.go", []byte(content), 0o644)
 			}
 
 			cancel()
@@ -290,9 +289,9 @@ func TestServe(t *testing.T) {
 
 	t.Run("Correct - Command failed and should wait for refresh", func(t *testing.T) {
 		procfile()
-		os.WriteFile("Procfile", []byte("test: go run test/main.go"), 0644)
+		os.WriteFile("Procfile", []byte("test: go run test/main.go"), 0o644)
 		content := "package main\n\nimport ( \"fmt\"\n \"time\"\n\n)\n\nfunc main() {\n time.Sleep(10*time.Millisecond)\n panic(fmt.Sprint(\"Something went wrong!\"))\n}"
-		os.WriteFile("test/main.go", []byte(content), 0644)
+		os.WriteFile("test/main.go", []byte(content), 0o644)
 		testFile()
 
 		r, w, _ := os.Pipe()
@@ -313,7 +312,7 @@ func TestServe(t *testing.T) {
 		go func() {
 			time.Sleep(100 * time.Millisecond)
 			content = "package main\n\nimport ( \"fmt\"\n \"time\"\n\n)\n\nfunc main() {\n time.Sleep(10*time.Millisecond)\n}"
-			os.WriteFile("test/main.go", []byte(content), 0644)
+			os.WriteFile("test/main.go", []byte(content), 0o644)
 		}()
 
 		go func() {

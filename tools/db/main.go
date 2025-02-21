@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/leapkit/leapkit/cli/db/internal/database"
+	"github.com/leapkit/leapkit/tools/db/internal/database"
 )
 
 func main() {
