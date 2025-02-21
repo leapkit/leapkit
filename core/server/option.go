@@ -41,8 +41,8 @@ func WithSession(secret, name string, options ...session.Option) Option {
 	}
 }
 
-func WithAssets(embedded fs.FS) Option {
-	manager := assets.NewManager(embedded)
+func WithAssets(embedded fs.FS, servingPath string) Option {
+	manager := assets.NewManager(embedded, servingPath)
 	return func(m *mux) {
 		m.Use(func(h http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
