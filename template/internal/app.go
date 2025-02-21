@@ -43,23 +43,16 @@ func New() Server {
 			cmp.Or(os.Getenv("SESSION_SECRET"), "d720c059-9664-4980-8169-1158e167ae57"),
 			cmp.Or(os.Getenv("SESSION_NAME"), "leapkit_session"),
 		),
+
+		server.WithAssets(assets.Files, "/public/"),
 	)
 
 	r.Use(render.Middleware(
 		render.TemplateFS(tmpls, "internal"),
 		render.WithDefaultLayout("layout.html"),
-
-		// Adding the assetPath helper to use
-		// fingerprinted asset paths in the templates
-		render.WithHelpers(map[string]any{
-			"assetPath": assets.Manager.PathFor,
-		}),
 	))
 
 	r.HandleFunc("GET /{$}", home.Index)
-
-	// Serving the internal/system/assets folder on /public/
-	r.Folder("/public/", assets.Manager)
 
 	return r
 }
