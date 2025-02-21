@@ -1,9 +1,5 @@
 github.com/fsnotify/fsnotify v1.8.0 h1:dAwr6QBTBZIkG8roQaJjGof0pp0EeF+tNV7YBP3F/8M=
 github.com/fsnotify/fsnotify v1.8.0/go.mod h1:8jBTzvmWwFyi3Pb8djgCCO5IBqzKJ/Jwo8TRcHyHii0=
-github.com/leapkit/leapkit/cli/db v0.0.0-20250221133609-cb80315527d1 h1:bG1VjJ3NkuAvtGhbEYCdWzkIMT3NfopDO5GiUUjbX/4=
-github.com/leapkit/leapkit/cli/db v0.0.0-20250221133609-cb80315527d1/go.mod h1:exCFAMEvME1dzZNycaslBy+OQk+XcXYOsYCI5ocMmpA=
-github.com/leapkit/leapkit/cli/dev v0.0.0-20250221133609-cb80315527d1 h1:ee28aqQwPY+rQH4GtCOwRWgtuqLCyjLjvapBaU22WsQ=
-github.com/leapkit/leapkit/cli/dev v0.0.0-20250221133609-cb80315527d1/go.mod h1:9FcXlIlq7YzbU7qthBwn1FroScINCBg3pb5zIlBRgjg=
 github.com/leapkit/leapkit/core v0.0.43 h1:M2vrZxGF4vWZrwzxjxTO6iANuxej6tawbeOP7yQlijw=
 github.com/leapkit/leapkit/core v0.0.43/go.mod h1:NRD6W/0lAbCB7ewQJURh+8f34bVqgtDnLM4xQHlrWlQ=
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
