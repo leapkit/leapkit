@@ -9,6 +9,10 @@ import (
 )
 
 func (m *manager) HandlerPattern() string {
+	if m.servingPath == "/" {
+		return ""
+	}
+
 	return m.servingPath
 }
 
