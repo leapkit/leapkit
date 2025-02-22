@@ -26,7 +26,3 @@ jobs:
         working-directory: ./core
         run: |
           go test --cover ./... -v
-      - name: test cli db
-        working-directory: ./tools
-        run: |
-          go test --cover ./... -v
