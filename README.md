@@ -2,6 +2,4 @@
 
 # Leapkit
 
-Leapkit Core is a collection of tools and utilities that are used across LeapKit projects. It contains packages that facilitate the development of web applications.
-
 ![Alt](https://repobeats.axiom.co/api/embed/3758ecc0bd55c4099834585f1da96705f6730eec.svg "Repobeats analytics image")
