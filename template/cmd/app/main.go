@@ -7,7 +7,7 @@ import (
 	"github.com/leapkit/leapkit/template/internal"
 
 	// Load environment variables
-	_ "github.com/leapkit/leapkit/core/tools/envload"
+	_ "go.leapkit.dev/core/tools/envload"
 	// sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 )

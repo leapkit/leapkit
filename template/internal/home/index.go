@@ -3,8 +3,8 @@ package home
 import (
 	"net/http"
 
-	"github.com/leapkit/leapkit/core/render"
-	"github.com/leapkit/leapkit/core/server"
+	"go.leapkit.dev/core/render"
+	"go.leapkit.dev/core/server"
 )
 
 // Renders the home page of the application.

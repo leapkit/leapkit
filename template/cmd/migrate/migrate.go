@@ -6,8 +6,8 @@ import (
 	"github.com/leapkit/leapkit/template/internal"
 	"github.com/leapkit/leapkit/template/internal/migrations"
 
-	"github.com/leapkit/leapkit/core/db"
 	_ "github.com/mattn/go-sqlite3" // sqlite3 driver
+	"go.leapkit.dev/core/db"
 )
 
 // The migrate command is used to ship our application
